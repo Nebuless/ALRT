@@ -18,7 +18,7 @@ jobs:
           node-version: '26.12.0'
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
         with:
-          go-version: '1.27.2'
+          go-version: '1.27.3'
           cache-dependency-path: collector/go.mod
       - name: Build dependencies
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential pkg-config libxml2-dev libcurl4-openssl-dev libonig-dev libssl-dev zlib1g-dev
