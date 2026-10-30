@@ -269,7 +269,13 @@ func TestFourHoursThreeIndependentHubsFreshSamplesAndRestart(t *testing.T) {
 		if !j.Append(sample(n)) {
 			t.Fatal("sampling queue unexpectedly full")
 		}
-		time.Sleep(time.Millisecond)
+		if n%16 == 0 {
+			closeTestJournal(t, j)
+			j, e = journal.Open(cfg)
+			if e != nil {
+				t.Fatal(e)
+			}
+		}
 	}
 	closeTestJournal(t, j)
 	j, e = journal.Open(cfg)
