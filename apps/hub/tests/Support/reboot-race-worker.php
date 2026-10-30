@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 require __DIR__.'/../../vendor/autoload.php';
-$input = json_decode(fgets(STDIN), true, flags: JSON_THROW_ON_ERROR);
+$input = json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERROR);
 $app = require __DIR__.'/../../bootstrap/app.php';
 $app->useEnvironmentPath($input['environment']);
 $app->make(Kernel::class)->bootstrap();
@@ -37,11 +37,13 @@ $owner = User::findOrFail($input['owner']);
 $owner->provider_enrolled = $provider['enrolled'] ?? false;
 $request->setUserResolver(fn () => $owner);
 $request->attributes->set('owner.provider_session', $provider);
+$gate = fopen($input['barrier'], 'r');
 echo "ready\n";
 flush();
-if (fgets(STDIN) !== "go\n") {
-    throw new RuntimeException('Missing race start signal');
+if (! flock($gate, LOCK_SH)) {
+    throw new RuntimeException('Race barrier failed');
 }
+fclose($gate);
 try {
     $result = match ($input['operation']) {
         'queue' => app(QueueReboot::class)->queue($request, $machine, $input['proof']),

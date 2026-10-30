@@ -5,7 +5,6 @@ use App\Models\Machine;
 use App\ReadModels\RebootActions;
 use Illuminate\Support\Facades\DB;
 use Livewire\Mechanisms\HandleRequests\HandleRequests;
-use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 use Tests\Support\TelemetryDatabase;
 
@@ -118,37 +117,34 @@ it('serializes concurrent queues and cancel versus authorize across real SQLite 
     $proofA = ($this->proof)();
     $proofB = ($this->proof)();
     $database = DB::selectOne('PRAGMA database_list')->file;
+    $barrier = dirname($database).'/reboot-barrier';
     $base = [
         'environment' => dirname($database), 'database' => $database, 'private_key' => config('actions.private_key'),
         'auth_config' => config('better-auth'), 'now' => now()->toIso8601String(), 'machine' => $this->target->id,
         'session_id' => session()->getId(), 'session' => session()->all(), 'owner' => $this->owner->id,
-        'boot' => $this->boot, 'action' => null,
+        'barrier' => $barrier, 'boot' => $this->boot, 'action' => null,
     ];
-    $race = function (array $operations) use ($base): array {
+    $race = function (array $operations) use ($base, $barrier): array {
         $processes = [];
-        $inputs = [];
+        $gate = fopen($barrier, 'c');
+        expect(flock($gate, LOCK_EX))->toBeTrue();
         foreach ($operations as $operation) {
             $process = new Process([dirname(__DIR__, 4).'/bin/php', dirname(__DIR__).'/Support/reboot-race-worker.php']);
-            $input = new InputStream;
-            $input->write(json_encode(array_replace($base, $operation), JSON_THROW_ON_ERROR)."\n");
-            $process->setInput($input);
+            $process->setInput(json_encode(array_replace($base, $operation), JSON_THROW_ON_ERROR));
             $process->setTimeout(60);
             $process->start();
             expect($process->waitUntil(fn ($type, $output) => str_contains($output, "ready\n")))->toBeTrue();
             $processes[] = $process;
-            $inputs[] = $input;
         }
-        foreach ($inputs as $index => $input) {
-            $input->write("go\n");
-            $input->close();
-            $processes[$index]->isRunning();
-        }
+        expect(flock($gate, LOCK_UN))->toBeTrue();
+        fclose($gate);
         $results = [];
         foreach ($processes as $process) {
             $process->wait();
             expect($process->isSuccessful())->toBeTrue();
             $results[] = json_decode(substr($process->getOutput(), strlen("ready\n")), true, flags: JSON_THROW_ON_ERROR);
         }
+        unlink($barrier);
 
         return $results;
     };
