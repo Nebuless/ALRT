@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 require __DIR__.'/../../vendor/autoload.php';
-$input = json_decode(stream_get_contents(STDIN), true, flags: JSON_THROW_ON_ERROR);
+$input = json_decode(fgets(STDIN), true, flags: JSON_THROW_ON_ERROR);
 $app = require __DIR__.'/../../bootstrap/app.php';
 $app->useEnvironmentPath($input['environment']);
 $app->make(Kernel::class)->bootstrap();
@@ -39,9 +39,8 @@ $request->setUserResolver(fn () => $owner);
 $request->attributes->set('owner.provider_session', $provider);
 echo "ready\n";
 flush();
-$deadline = microtime(true) + 10;
-while (! is_file($input['barrier']) && microtime(true) < $deadline) {
-    usleep(1000);
+if (fgets(STDIN) !== "go\n") {
+    throw new RuntimeException('Missing race start signal');
 }
 try {
     $result = match ($input['operation']) {

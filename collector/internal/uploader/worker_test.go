@@ -58,6 +58,31 @@ func fixture(t *testing.T, n uint64) []byte {
 	b, _ = json.Marshal(r)
 	return b
 }
+
+func awaitTestEvent(t *testing.T, event <-chan struct{}, name string) {
+	t.Helper()
+	select {
+	case <-event:
+	case <-time.After(5 * time.Second):
+		t.Fatalf("timed out waiting for %s", name)
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+type responseCloseEvent struct {
+	io.ReadCloser
+	onClose func()
+}
+
+func (b responseCloseEvent) Close() error {
+	err := b.ReadCloser.Close()
+	b.onClose()
+	return err
+}
+
 func TestFreshContactNeverSkipsBacklogAndAckLossRetriesIdentity(t *testing.T) {
 	var mu sync.Mutex
 	var events []string
@@ -155,20 +180,58 @@ func TestEmptyWrongAndPartialACKOnlyAdvanceSentPrefix(t *testing.T) {
 				respondJSON(t, w, map[string]string{"nonce": strings.Repeat("n", 64), "expires_at": time.Now().Add(time.Minute).UTC().Format(time.RFC3339Nano)})
 			}))
 			defer server.Close()
-			j, e := journal.Open(journal.Config{Directory: t.TempDir(), Destinations: []string{"hub"}})
+			cfg := journal.Config{Directory: t.TempDir(), Destinations: []string{"hub"}}
+			j, e := journal.Open(cfg)
 			if e != nil {
 				t.Fatal(e)
 			}
 			defer closeTestJournal(t, j)
 			for n := uint64(1); n <= 3; n++ {
-				j.Append(fixture(t, n))
+				if !j.Append(fixture(t, n)) {
+					t.Fatal("sampling queue unexpectedly full")
+				}
 			}
-			time.Sleep(10 * time.Millisecond)
-			w := New(Destination{ID: "hub", URL: server.URL}, j, server.Client())
+			// Close drains the asynchronous append queue and synchronizes the real
+			// journal; reopening makes all three records available before contact.
+			closeTestJournal(t, j)
+			j, e = journal.Open(cfg)
+			if e != nil {
+				t.Fatal(e)
+			}
+			defer closeTestJournal(t, j)
+			contactCtx, cancelContact := context.WithCancel(context.Background())
+			defer cancelContact()
+			replayCtx, cancelReplay := context.WithCancel(context.Background())
+			defer cancelReplay()
+			client := *server.Client()
+			transport := client.Transport
+			responseRead := make(chan struct{})
+			client.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				response, err := transport.RoundTrip(r)
+				if err == nil && strings.HasSuffix(r.URL.Path, "/reports") {
+					response.Body = responseCloseEvent{response.Body, func() {
+						// post closes the fully read/decoded response before replay
+						// processes its ACK. Cancel only the next iteration, so the
+						// partial case cannot ACK another record on a later retry.
+						close(responseRead)
+						cancelReplay()
+					}}
+				}
+				return response, err
+			})
+			w := New(Destination{ID: "hub", URL: server.URL}, j, &client)
+			w.OnContact = func(protocol.Report) { cancelContact() }
+			contactDone := make(chan struct{})
+			go func() { defer close(contactDone); w.contacts(contactCtx) }()
 			w.Publish(fixture(t, 100))
-			ctx, cancel := context.WithTimeout(context.Background(), 80*time.Millisecond)
-			defer cancel()
-			w.Run(ctx)
+			awaitTestEvent(t, contactDone, "accepted fresh contact")
+			replayDone := make(chan struct{})
+			go func() { defer close(replayDone); w.replay(replayCtx) }()
+			awaitTestEvent(t, responseRead, "replay ACK response")
+			awaitTestEvent(t, replayDone, "replay ACK processing")
+			// A successful Commit only queues work. Drain it after replay exits
+			// before checking the persisted cursor, including the zero cases.
+			closeTestJournal(t, j)
 			want := uint64(0)
 			if kind == "partial" {
 				want = 1
@@ -465,7 +528,15 @@ func TestEvictedBacklogRemainsExplicitGapInCurrentEnvelope(t *testing.T) {
 		if !j.Append(fixture(t, n)) {
 			t.Fatal("queue full")
 		}
-		time.Sleep(2 * time.Millisecond)
+		if n%16 == 0 {
+			// Append is asynchronous with a 32-slot queue. Drain a bounded
+			// batch before submitting more, independent of writer/CPU speed.
+			closeTestJournal(t, j)
+			j, e = journal.Open(cfg)
+			if e != nil {
+				t.Fatal(e)
+			}
+		}
 	}
 	closeTestJournal(t, j)
 	j, e = journal.Open(cfg)
@@ -473,6 +544,9 @@ func TestEvictedBacklogRemainsExplicitGapInCurrentEnvelope(t *testing.T) {
 		t.Fatal(e)
 	}
 	defer closeTestJournal(t, j)
+	if d := j.Delivery(); len(d.LostRanges) == 0 || d.LostRanges[0].Reason != "eviction" {
+		t.Fatalf("fixture did not persist eviction: %#v", d)
+	}
 	seen := make(chan protocol.Delivery, 1)
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
