@@ -2,6 +2,8 @@
 
 Every change arrives through a pull request into `main`, normally squash-merged with a concise descriptive title. Add a permanent `.changes/*.md` record, including for tests, docs and infrastructure. CI rejects PRs without a new valid record and rejects edits/deletions of old records. GitHub's commit history links merge commits to PRs; the record beside each commit explains the change. No release or version bump happens on an ordinary merge.
 
+`main` requires an up-to-date PR with passing application, tooling and both native package checks, resolved conversations and linear history. Direct pushes, force pushes and branch deletion are blocked, including for admins. Squash merges keep one visible commit per PR; merged branches are automatically removed. Independent review is a maintainer responsibility; the small project does not require a second GitHub account to approve its own initial setup.
+
 `CHANGELOG.md` is the curated overview. `.changes/` is the detailed ongoing log. `.changes/releases.json` deliberately selects records for each explicit release; `python3 scripts/changes.py notes --version 0.1.2` prints deterministic notes. Keep records free of personal information and runtime secrets.
 
 ## Prepare an explicit collector release

@@ -152,7 +152,8 @@ def notes(records, releases, version):
             lines.extend([f"### {kind.capitalize()}", ""])
             for name in group:
                 _, heading, body = records[name]
-                lines.extend([f"#### {heading}", "", body, "", f"Record: [.changes/{name}](.changes/{name})", ""])
+                ref = "main" if version == "unreleased" else f"v{version}"
+                lines.extend([f"#### {heading}", "", body, "", f"Record: [.changes/{name}](https://github.com/Nebuless/ALRT/blob/{ref}/.changes/{name})", ""])
     return "\n".join(lines).rstrip() + "\n"
 
 
