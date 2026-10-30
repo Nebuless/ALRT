@@ -125,17 +125,19 @@ it('serializes concurrent queues and cancel versus authorize across real SQLite 
         'barrier' => $barrier, 'boot' => $this->boot, 'action' => null,
     ];
     $race = function (array $operations) use ($base, $barrier): array {
-        @unlink($barrier);
         $processes = [];
+        $gate = fopen($barrier, 'c');
+        expect(flock($gate, LOCK_EX))->toBeTrue();
         foreach ($operations as $operation) {
             $process = new Process([dirname(__DIR__, 4).'/bin/php', dirname(__DIR__).'/Support/reboot-race-worker.php']);
             $process->setInput(json_encode(array_replace($base, $operation), JSON_THROW_ON_ERROR));
-            $process->setTimeout(15);
+            $process->setTimeout(60);
             $process->start();
-            $process->waitUntil(fn ($type, $output) => str_contains($output, "ready\n"));
+            expect($process->waitUntil(fn ($type, $output) => str_contains($output, "ready\n")))->toBeTrue();
             $processes[] = $process;
         }
-        touch($barrier);
+        expect(flock($gate, LOCK_UN))->toBeTrue();
+        fclose($gate);
         $results = [];
         foreach ($processes as $process) {
             $process->wait();

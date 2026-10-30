@@ -37,12 +37,13 @@ $owner = User::findOrFail($input['owner']);
 $owner->provider_enrolled = $provider['enrolled'] ?? false;
 $request->setUserResolver(fn () => $owner);
 $request->attributes->set('owner.provider_session', $provider);
+$gate = fopen($input['barrier'], 'r');
 echo "ready\n";
 flush();
-$deadline = microtime(true) + 10;
-while (! is_file($input['barrier']) && microtime(true) < $deadline) {
-    usleep(1000);
+if (! flock($gate, LOCK_SH)) {
+    throw new RuntimeException('Race barrier failed');
 }
+fclose($gate);
 try {
     $result = match ($input['operation']) {
         'queue' => app(QueueReboot::class)->queue($request, $machine, $input['proof']),

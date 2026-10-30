@@ -58,6 +58,31 @@ func fixture(t *testing.T, n uint64) []byte {
 	b, _ = json.Marshal(r)
 	return b
 }
+
+func awaitTestEvent(t *testing.T, event <-chan struct{}, name string) {
+	t.Helper()
+	select {
+	case <-event:
+	case <-time.After(5 * time.Second):
+		t.Fatalf("timed out waiting for %s", name)
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+type responseCloseEvent struct {
+	io.ReadCloser
+	onClose func()
+}
+
+func (b responseCloseEvent) Close() error {
+	err := b.ReadCloser.Close()
+	b.onClose()
+	return err
+}
+
 func TestFreshContactNeverSkipsBacklogAndAckLossRetriesIdentity(t *testing.T) {
 	var mu sync.Mutex
 	var events []string
@@ -155,20 +180,58 @@ func TestEmptyWrongAndPartialACKOnlyAdvanceSentPrefix(t *testing.T) {
 				respondJSON(t, w, map[string]string{"nonce": strings.Repeat("n", 64), "expires_at": time.Now().Add(time.Minute).UTC().Format(time.RFC3339Nano)})
 			}))
 			defer server.Close()
-			j, e := journal.Open(journal.Config{Directory: t.TempDir(), Destinations: []string{"hub"}})
+			cfg := journal.Config{Directory: t.TempDir(), Destinations: []string{"hub"}}
+			j, e := journal.Open(cfg)
 			if e != nil {
 				t.Fatal(e)
 			}
 			defer closeTestJournal(t, j)
 			for n := uint64(1); n <= 3; n++ {
-				j.Append(fixture(t, n))
+				if !j.Append(fixture(t, n)) {
+					t.Fatal("sampling queue unexpectedly full")
+				}
 			}
-			time.Sleep(10 * time.Millisecond)
-			w := New(Destination{ID: "hub", URL: server.URL}, j, server.Client())
+			// Close drains the asynchronous append queue and synchronizes the real
+			// journal; reopening makes all three records available before contact.
+			closeTestJournal(t, j)
+			j, e = journal.Open(cfg)
+			if e != nil {
+				t.Fatal(e)
+			}
+			defer closeTestJournal(t, j)
+			contactCtx, cancelContact := context.WithCancel(context.Background())
+			defer cancelContact()
+			replayCtx, cancelReplay := context.WithCancel(context.Background())
+			defer cancelReplay()
+			client := *server.Client()
+			transport := client.Transport
+			responseRead := make(chan struct{})
+			client.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+				response, err := transport.RoundTrip(r)
+				if err == nil && strings.HasSuffix(r.URL.Path, "/reports") {
+					response.Body = responseCloseEvent{response.Body, func() {
+						// post closes the fully read/decoded response before replay
+						// processes its ACK. Cancel only the next iteration, so the
+						// partial case cannot ACK another record on a later retry.
+						close(responseRead)
+						cancelReplay()
+					}}
+				}
+				return response, err
+			})
+			w := New(Destination{ID: "hub", URL: server.URL}, j, &client)
+			w.OnContact = func(protocol.Report) { cancelContact() }
+			contactDone := make(chan struct{})
+			go func() { defer close(contactDone); w.contacts(contactCtx) }()
 			w.Publish(fixture(t, 100))
-			ctx, cancel := context.WithTimeout(context.Background(), 80*time.Millisecond)
-			defer cancel()
-			w.Run(ctx)
+			awaitTestEvent(t, contactDone, "accepted fresh contact")
+			replayDone := make(chan struct{})
+			go func() { defer close(replayDone); w.replay(replayCtx) }()
+			awaitTestEvent(t, responseRead, "replay ACK response")
+			awaitTestEvent(t, replayDone, "replay ACK processing")
+			// A successful Commit only queues work. Drain it after replay exits
+			// before checking the persisted cursor, including the zero cases.
+			closeTestJournal(t, j)
 			want := uint64(0)
 			if kind == "partial" {
 				want = 1
@@ -206,7 +269,13 @@ func TestFourHoursThreeIndependentHubsFreshSamplesAndRestart(t *testing.T) {
 		if !j.Append(sample(n)) {
 			t.Fatal("sampling queue unexpectedly full")
 		}
-		time.Sleep(time.Millisecond)
+		if n%16 == 0 {
+			closeTestJournal(t, j)
+			j, e = journal.Open(cfg)
+			if e != nil {
+				t.Fatal(e)
+			}
+		}
 	}
 	closeTestJournal(t, j)
 	j, e = journal.Open(cfg)
@@ -292,33 +361,118 @@ func TestFourHoursThreeIndependentHubsFreshSamplesAndRestart(t *testing.T) {
 		defer servers[id].Close()
 	}
 	defer unblock()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	var tasks sync.WaitGroup
-	workers := map[string]*Worker{}
-	for id, s := range servers {
-		w := New(Destination{ID: id, URL: s.URL}, j, s.Client())
-		workers[id] = w
-		w.Publish(sample(count + 1))
-		tasks.Add(1)
-		go func() { defer tasks.Done(); w.Run(ctx) }()
-	}
-	<-blocked
-	wait := func(f func() bool) {
+	// Timeouts are failure bounds only. Subscribe before starting each action;
+	// server receipt alone is not evidence of client ACK processing or persistence.
+	await := func(event <-chan struct{}, name string) {
 		t.Helper()
-		end := time.Now().Add(15 * time.Second)
-		for time.Now().Before(end) {
-			if f() {
+		select {
+		case <-event:
+		case <-time.After(60 * time.Second):
+			t.Fatalf("timed out waiting for %s", name)
+		}
+	}
+	workers := map[string]*Worker{}
+	type replayCancelKey struct{}
+	for id, s := range servers {
+		client := *s.Client()
+		transport := client.Transport
+		client.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			response, err := transport.RoundTrip(r)
+			if err == nil && strings.HasSuffix(r.URL.Path, "/reports") {
+				response.Body = responseCloseEvent{response.Body, func() {
+					// post defers Close until after reading and decoding the ACK.
+					// Cancellation stops the next iteration, after prefix/Commit.
+					r.Context().Value(replayCancelKey{}).(context.CancelFunc)()
+				}}
+			}
+			return response, err
+		})
+		workers[id] = New(Destination{ID: id, URL: s.URL}, j, &client)
+	}
+	defer func() { closeTestJournal(t, j) }()
+	// Close is the public journal drain barrier. Only stopped workers are
+	// rebound, except primary whose challenge cannot pass the release gate.
+	drain := func() {
+		t.Helper()
+		if err := j.Close(); err != nil {
+			t.Fatal(err)
+		}
+		j, e = journal.Open(cfg)
+		if e != nil {
+			t.Fatal(e)
+		}
+		for _, w := range workers {
+			w.journal = j
+		}
+	}
+	startContact := func(id string, n uint64) (context.CancelFunc, <-chan struct{}) {
+		contactCtx, cancelContact := context.WithCancel(context.Background())
+		w := workers[id]
+		w.OnContact = func(r protocol.Report) {
+			if r.Sequence != n {
+				t.Errorf("%s accepted stale contact %d, want %d", id, r.Sequence, n)
+			}
+			cancelContact()
+		}
+		done := make(chan struct{})
+		go func() { defer close(done); w.contacts(contactCtx) }()
+		w.Publish(sample(n))
+		return cancelContact, done
+	}
+	cancelPrimary, primaryDone := startContact("primary", count+1)
+	defer cancelPrimary()
+	await(blocked, "blocked primary challenge")
+	freshContacts := func(n uint64, ids ...string) {
+		t.Helper()
+		var completions []<-chan struct{}
+		for _, id := range ids {
+			cancelContact, done := startContact(id, n)
+			defer cancelContact()
+			completions = append(completions, done)
+		}
+		for i, done := range completions {
+			await(done, ids[i]+" accepted current contact")
+		}
+		drain()
+	}
+	// Run real replay loops concurrently, one completed response per round.
+	// Draining between rounds bounds queued NoteACK+Commit operations to four,
+	// without relying on writer speed, retry pauses, or a cursor polling clock.
+	replayThrough := func(target uint64, ids ...string) {
+		t.Helper()
+		for {
+			var completions []<-chan struct{}
+			var active []string
+			before := map[string]uint64{}
+			for _, id := range ids {
+				if cursor := j.Cursor(id); cursor < target {
+					before[id] = cursor
+					active = append(active, id)
+					replayCtx, cancelReplay := context.WithCancel(context.Background())
+					defer cancelReplay()
+					replayCtx = context.WithValue(replayCtx, replayCancelKey{}, cancelReplay)
+					done := make(chan struct{})
+					w := workers[id]
+					go func() { defer close(done); w.replay(replayCtx) }()
+					completions = append(completions, done)
+				}
+			}
+			if len(active) == 0 {
 				return
 			}
-			time.Sleep(10 * time.Millisecond)
+			for i, done := range completions {
+				await(done, active[i]+" decoded replay ACK and submitted prefix")
+			}
+			drain()
+			for _, id := range active {
+				if j.Cursor(id) <= before[id] {
+					t.Fatalf("%s failed to persist sent prefix: status %s cursor %d", id, workers[id].Status(), j.Cursor(id))
+				}
+			}
 		}
-		for id, w := range workers {
-			t.Logf("hub %s status %s cursor %d", id, w.Status(), j.Cursor(id))
-		}
-		t.Fatal("independent hubs timed out")
 	}
-	wait(func() bool { return j.Cursor("standby") >= count && j.Cursor("beta-restricted") >= count })
+	freshContacts(count+1, "standby", "beta-restricted")
+	replayThrough(count, "standby", "beta-restricted")
 	mu.Lock()
 	if contacts["primary"] != 0 || !culprit {
 		t.Error("blocked hub/culprit proof")
@@ -329,29 +483,26 @@ func TestFourHoursThreeIndependentHubsFreshSamplesAndRestart(t *testing.T) {
 	}
 	for n := uint64(count + 2); n <= count+5; n++ {
 		b := sample(n)
-		j.Append(b)
-		for _, w := range workers {
-			w.Publish(b)
+		if !j.Append(b) {
+			t.Fatal("fresh sampling queue unexpectedly full")
 		}
-		time.Sleep(20 * time.Millisecond)
+		workers["primary"].Publish(b)
+		freshContacts(n, "standby", "beta-restricted")
 	}
-	wait(func() bool {
-		mu.Lock()
-		defer mu.Unlock()
-		return contacts["standby"] == count+5 && contacts["beta-restricted"] == count+5
-	})
+	mu.Lock()
+	if contacts["standby"] != count+5 || contacts["beta-restricted"] != count+5 || contacts["primary"] != 0 {
+		t.Error("independent current contact freshness")
+	}
+	mu.Unlock()
+	// Retire the blocked attempt before releasing its server gate. The queued
+	// latest sample must be the first successful contact before primary replay.
+	cancelPrimary()
+	await(primaryDone, "blocked primary contact stopped")
 	unblock()
-	wait(func() bool { return j.Cursor("primary") >= count })
-	cancel()
-	tasks.Wait()
-	if e = j.Close(); e != nil {
-		t.Fatal(e)
-	}
-	j, e = journal.Open(cfg)
-	if e != nil {
-		t.Fatal(e)
-	}
-	defer closeTestJournal(t, j)
+	freshContacts(count+5, "primary")
+	replayThrough(count, "primary")
+	// A final close/reopen proves ACK cursors survive process restart.
+	drain()
 	mu.Lock()
 	defer mu.Unlock()
 	for _, id := range cfg.Destinations {
@@ -465,7 +616,15 @@ func TestEvictedBacklogRemainsExplicitGapInCurrentEnvelope(t *testing.T) {
 		if !j.Append(fixture(t, n)) {
 			t.Fatal("queue full")
 		}
-		time.Sleep(2 * time.Millisecond)
+		if n%16 == 0 {
+			// Append is asynchronous with a 32-slot queue. Drain a bounded
+			// batch before submitting more, independent of writer/CPU speed.
+			closeTestJournal(t, j)
+			j, e = journal.Open(cfg)
+			if e != nil {
+				t.Fatal(e)
+			}
+		}
 	}
 	closeTestJournal(t, j)
 	j, e = journal.Open(cfg)
@@ -473,6 +632,9 @@ func TestEvictedBacklogRemainsExplicitGapInCurrentEnvelope(t *testing.T) {
 		t.Fatal(e)
 	}
 	defer closeTestJournal(t, j)
+	if d := j.Delivery(); len(d.LostRanges) == 0 || d.LostRanges[0].Reason != "eviction" {
+		t.Fatalf("fixture did not persist eviction: %#v", d)
+	}
 	seen := make(chan protocol.Delivery, 1)
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body struct {

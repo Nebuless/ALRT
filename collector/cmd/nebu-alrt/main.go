@@ -18,6 +18,11 @@ import (
 
 type resources map[string]string
 
+var version = "dev"
+var revision = "unknown"
+
+const usage = "usage: nebu-alrt version | run --config FILE | sample --machine-id ID [--scope host|sandbox] [--disk LABEL=PATH] [--interface LABEL=NAME] [--count N] [--interval 10s]"
+
 func (r resources) String() string { return "configured" }
 func (r resources) Set(value string) error {
 	pair := strings.SplitN(value, "=", 2)
@@ -36,6 +41,16 @@ func main() {
 }
 
 func run(args []string, out io.Writer) error {
+	if len(args) == 1 {
+		switch args[0] {
+		case "version", "--version":
+			_, err := fmt.Fprintf(out, "nebu-alrt %s (%s)\n", version, revision)
+			return err
+		case "help", "--help":
+			_, err := fmt.Fprintln(out, usage)
+			return err
+		}
+	}
 	if len(args) > 0 && args[0] == "run" {
 		flags := flag.NewFlagSet("run", flag.ContinueOnError)
 		flags.SetOutput(io.Discard)
@@ -52,7 +67,7 @@ func run(args []string, out io.Writer) error {
 		return daemon.Run(ctx, config, out)
 	}
 	if len(args) == 0 || args[0] != "sample" {
-		return fmt.Errorf("usage: nebu-alrt run --config FILE | sample --machine-id ID [--scope host|sandbox] [--disk LABEL=PATH] [--interface LABEL=NAME] [--count N] [--interval 10s]")
+		return fmt.Errorf("%s", usage)
 	}
 	flags := flag.NewFlagSet("sample", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
