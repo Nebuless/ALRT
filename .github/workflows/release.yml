@@ -83,7 +83,8 @@ jobs:
           python3 -B scripts/changes.py notes --version "$version" > dist/NOTES.md
           # --target cannot override an existing tag. Refuse one rather than
           # attaching verified bytes to an unrelated source revision.
-          test -z "$(git ls-remote --tags origin "refs/tags/v$version" "refs/tags/v$version^{}")"
+          existing_tags=$(git ls-remote --tags origin "refs/tags/v$version" "refs/tags/v$version^{}")
+          test -z "$existing_tags"
           test -f "dist/nebu-alrt_${version}_linux_amd64.tar.gz"
           test -f "dist/nebu-alrt_${version}_linux_arm64.tar.gz"
           cp install.sh dist/install.sh
