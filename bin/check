@@ -9,6 +9,7 @@ cd "$root/apps/hub"
 "$root/bin/php" vendor/bin/pint --test
 "$root/bin/php" vendor/bin/phpstan analyse --no-progress --memory-limit=512M
 "$root/bin/php" vendor/bin/rector process --dry-run --no-progress-bar
+npm --prefix "$root/apps/hub" run build
 "$root/bin/php" vendor/bin/pest --compact
 cd "$root/collector"
 unformatted=$(gofmt -l .)
@@ -18,4 +19,3 @@ if [[ -n "$unformatted" ]]; then
 fi
 golangci-lint run
 go test ./...
-npm --prefix "$root/apps/hub" run build
