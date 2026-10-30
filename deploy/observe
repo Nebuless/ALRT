@@ -28,7 +28,7 @@ with sqlite3.connect('file:'+str(base/'state/hub.sqlite')+'?mode=ro',uri=True) a
 if config['manager']=='supervisor':
     managed = subprocess.check_output(['supervisorctl','-c',str(base/'supervisor.conf'),'status'],text=True)
 else:
-    managed = subprocess.check_output(['systemctl','--user','show','--property=Id,ActiveState,SubState,MainPID,NRestarts','nebuless-auth','nebuless-fpm','nebuless-http','nebuless-scheduler','nebuless-urgent','nebuless-maintenance','nebu-alrt'],text=True)
+    managed = subprocess.check_output(['systemctl','--user','show','--property=Id,ActiveState,SubState,MainPID,NRestarts','nebuless-auth','nebuless-fpm','nebuless-http','nebuless-scheduler','nebuless-urgent','nebuless-maintenance','nebuless-collector'],text=True)
     hub['linger'] = subprocess.check_output(['loginctl','show-user',str(__import__('os').getuid()),'-p','Linger','--value'],text=True).strip()
 report = {'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'release':read_json(release/'release.json')['version'],'runtime':{'php':json.loads(php),'node':json.loads(node),'caddy':subprocess.check_output([config['caddy'],'version'],env=environment(base,release),text=True).strip()},'identity':hub,'https':health(base),'services':managed,'contacts':rows,'heartbeats':heartbeats,'samples':samples,'owner_count':owner,'action_count':actions,'deployment':read_json(base/'deployment.json')}
 print(json.dumps(report,indent=2))

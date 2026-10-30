@@ -14,5 +14,5 @@ elif command == 'restart': restart(base)
 elif command == 'status':
     config = read_json(base/'state/runtime.json')
     if config['manager']=='supervisor': subprocess.run(['supervisorctl','-c',str(base/'supervisor.conf'),'status'],check=True)
-    else: subprocess.run(['systemctl','--user','--no-pager','status','nebuless-auth','nebuless-fpm','nebuless-http','nebuless-scheduler','nebuless-urgent','nebuless-maintenance','nebu-alrt'],check=True)
+    else: subprocess.run(['systemctl','--user','--no-pager','status','nebuless-auth','nebuless-fpm','nebuless-http','nebuless-scheduler','nebuless-urgent','nebuless-maintenance','nebuless-collector'],check=True)
 else: raise SystemExit('Use refresh, restart or status')

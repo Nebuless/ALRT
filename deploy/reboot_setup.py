@@ -96,7 +96,7 @@ def prepare_target(base, public, credential):
     runtime_home = Path(os.environ.get('XDG_RUNTIME_DIR') or '/run/user/'+str(os.geteuid()))
     if not config_home.is_absolute() or not runtime_home.is_absolute(): raise ValueError('Native credential directories must be absolute')
     encrypted, request = config_home/'credstore.encrypted/nebuless-reboot', base/'state/reboot-enrollment.json'
-    dropin = config_home/'systemd/user/nebu-alrt.service.d/credential.conf'
+    dropin = config_home/'systemd/user/nebuless-collector.service.d/credential.conf'
     native_ids = [directory/store/'nebuless-reboot' for directory in (config_home,runtime_home) for store in ('credstore','credstore.encrypted')]
     if any(path.exists() or path.is_symlink() for path in (*native_ids,base/'state/reboot.cred',request,dropin)): raise ValueError('Existing enrollment is preserved; explicit local rotation/recovery required')
     policy = {'machine_id':collector['machine_id'],'machine_name':config['name'],'collector_uid':os.geteuid(),'credential_hash':hashlib.sha256(credential.encode()).hexdigest(),**public}

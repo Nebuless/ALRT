@@ -88,6 +88,7 @@ def main():
             'AUTH_ORIGIN': origin, 'AUTH_BRIDGE_KEY': secrets.token_hex(32),
             'AUTH_BRIDGE_URL': f'http://127.0.0.1:{auth_port}', 'AUTH_PORT': str(auth_port),
             'NEBULESS_HUB_NAME': 'Primary-Hub', 'NEBULESS_HUB_ROLE': 'primary',
+            'NEBULESS_AUTH_MODE': 'better-auth',
             'NEBULESS_ACTION_KEY_ID': 'synthetic-browser-only', 'NEBULESS_ACTION_PRIVATE_KEY_FILE': str(directory / 'signing.pem'),
             'LD_LIBRARY_PATH': str(ROOT / 'tools/runtime/lib'), 'BROWSER_SCRATCH': scratch,
             'BROWSER_BASE_URL': origin, 'BROWSER_STORAGE_STATE': str(directory / 'browser-state.json'),

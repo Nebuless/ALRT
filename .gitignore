@@ -7,6 +7,8 @@ __pycache__/
 .qlty/plugin_cachedir
 .qlty/results
 .publication/
+/bin/nebu-alrt
+/bin/nebuless-reboot-helper
 *.db
 *.sqlite
 *.sqlite-wal

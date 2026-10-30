@@ -457,10 +457,10 @@ class DeploymentReadiness(unittest.TestCase):
         for release in (self.prior,self.candidate):
             release.mkdir(); self.d.write_json(release/'release.json',{'schema_epoch':1})
         self.d.switch(self.base,self.prior)
-        self.collector = {'machine_id':'local-machine', 'destinations':[{'id':name,'url':'https://'+name+'.example','token':'private-'+name} for name in ('standby','primary','restricted')]}
+        self.collector = {'machine_id':'local-machine', 'destinations':[{'id':name,'url':'https://'+name+'.example','token':'private-'+name} for name in ('alpha','primary','restricted')]}
         self.d.write_json(self.base/'state/collector.json',self.collector)
         with sqlite3.connect(self.base/'state/hub.sqlite') as db:
-            db.execute('CREATE TABLE hub_identities(id INTEGER,hub_uuid TEXT)'); db.execute("INSERT INTO hub_identities VALUES (1,'standby')")
+            db.execute('CREATE TABLE hub_identities(id INTEGER,hub_uuid TEXT)'); db.execute("INSERT INTO hub_identities VALUES (1,'alpha')")
 
     def peer(self, hub='primary', age=0, scheduler=0, urgent: int | None=0):
         return {'hub_id':hub,'observed_at':(datetime.datetime.now(datetime.timezone.utc)-datetime.timedelta(seconds=age)).isoformat(),'heartbeats':{'scheduler':scheduler,'urgent_worker':urgent}}
@@ -492,7 +492,7 @@ class DeploymentReadiness(unittest.TestCase):
             handlers = build.call_args.args
             self.assertEqual(handlers[0].proxies,{'https':proxy})
             self.assertIsNone(handlers[1].redirect_request(None,None,None,None,None,None))
-            for bad in (self.peer('standby'),self.peer(age=16),self.peer(age=-6),self.peer(scheduler=45),self.peer(urgent=None),self.peer(scheduler=True)):
+            for bad in (self.peer('alpha'),self.peer(age=16),self.peer(age=-6),self.peer(scheduler=45),self.peer(urgent=None),self.peer(scheduler=True)):
                 body[0] = bad
                 with self.assertRaises(RuntimeError): self.d.require_healthy_peer(self.base)
             self.assertTrue(all('alpha.example' not in request.full_url for request in seen))
@@ -600,7 +600,7 @@ class DeploymentReadiness(unittest.TestCase):
         with patch.object(self.d.urllib.request,'build_opener') as build, patch.object(self.d.subprocess,'run',side_effect=manager), patch.object(self.d.time,'sleep'), patch.object(self.d.time,'monotonic',side_effect=itertools.count()):
             build.return_value.open.side_effect=opened
             self.assertTrue(self.d.health(self.base)['maintenance'])
-            for service in ('nebuless-maintenance','nebu-alrt'):
+            for service in ('nebuless-maintenance','nebuless-collector'):
                 stopped.add(service)
                 with self.assertRaises(RuntimeError): self.d.health(self.base)
                 stopped.clear()

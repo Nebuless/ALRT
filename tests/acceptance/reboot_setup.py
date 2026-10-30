@@ -71,7 +71,7 @@ class RebootProvisioning(unittest.TestCase):
         self.assertEqual((native/'nebuless-reboot').read_bytes(),b'encrypted-native-ciphertext')
         self.assertEqual((native/'nebuless-reboot').stat().st_mode & 0o777,0o600)
         self.assertEqual(unrelated.read_bytes(),b'unrelated encrypted credential')
-        self.assertEqual((config_home/'systemd/user/nebu-alrt.service.d/credential.conf').read_text(),'[Service]\nImportCredential=nebuless-reboot\n')
+        self.assertEqual((config_home/'systemd/user/nebuless-collector.service.d/credential.conf').read_text(),'[Service]\nImportCredential=nebuless-reboot\n')
         with patch.object(self.module.os,'geteuid',return_value=policy['collector_uid']),patch.object(self.module.Path,'home',return_value=home),patch.object(self.module.subprocess,'run') as encryption,patch.dict(os.environ,{'XDG_CONFIG_HOME':str(config_home),'XDG_RUNTIME_DIR':str(home/'run')}):
             with self.assertRaises(ValueError):self.module.prepare_target(self.base,public,canary)
             encryption.assert_not_called()
