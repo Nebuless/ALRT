@@ -1,0 +1,61 @@
+name: Release tooling
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tooling:
+    name: Release tooling
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Change records and tooling tests
+        run: |
+          python3 -B scripts/changes.py check
+          python3 -B -m unittest discover -s scripts -p 'test_*.py'
+      - name: Require new permanent PR change record
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: python3 -B scripts/changes.py check --base "$PR_BASE"
+      - name: Pinned shell and workflow validators
+        uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db
+        with:
+          version: '2026.9.18'
+          sha256: d24fe0bf7e613824ad99f7b8dac3f2b381a37b9f75f84dd250855217095a8de4
+          install_args: aqua:rhysd/actionlint@1.7.12 aqua:koalaman/shellcheck@0.11.0
+      - run: |
+          shellcheck install.sh scripts/package-release.sh
+          actionlint
+  package:
+    name: Package Linux ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: '1.27.2'
+          cache-dependency-path: collector/go.mod
+      - run: cd collector && go test ./... && go vet ./...
+      - name: Build static release archive
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: bash scripts/package-release.sh "$ARCH" dist
+      - name: Exercise packaged binary through real installer
+        run: python3 -B scripts/test_install.py --artifact-dir dist

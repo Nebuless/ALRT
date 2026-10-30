@@ -8,6 +8,7 @@ __pycache__/
 .qlty/results
 .publication/
 /bin/nebu-alrt
+/dist/
 /bin/nebuless-reboot-helper
 *.db
 *.sqlite

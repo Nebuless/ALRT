@@ -1,0 +1,76 @@
+name: Release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release
+  cancel-in-progress: false
+jobs:
+  quality:
+    if: github.ref == 'refs/heads/main' && github.repository == 'Nebuless/ALRT'
+    uses: ./.github/workflows/check.yml
+  build:
+    if: github.ref == 'refs/heads/main' && github.repository == 'Nebuless/ALRT'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: '1.27.2'
+          cache-dependency-path: collector/go.mod
+      - run: cd collector && go test ./... && go vet ./...
+      - name: Package and install verification
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          bash scripts/package-release.sh "$ARCH" dist
+          python3 -B scripts/test_install.py --artifact-dir dist
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+  draft:
+    needs: [quality, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: linux-*
+          merge-multiple: true
+          path: dist
+      - name: Validate release metadata and create draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          version=$(<VERSION)
+          [[ "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          python3 -B scripts/changes.py check
+          python3 -B scripts/changes.py notes --version "$version" > dist/NOTES.md
+          test -f "dist/nebu-alrt_${version}_linux_amd64.tar.gz"
+          test -f "dist/nebu-alrt_${version}_linux_arm64.tar.gz"
+          cp install.sh dist/install.sh
+          (cd dist && sha256sum nebu-alrt_*.tar.gz install.sh > SHA256SUMS)
+          gh release create "v$version" dist/*.tar.gz dist/install.sh dist/SHA256SUMS \
+            --draft --target "$GITHUB_SHA" --title "ALRT $version — collector CLI" --notes-file dist/NOTES.md
