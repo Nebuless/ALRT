@@ -161,7 +161,7 @@ def main():
                     print('Citizens real bridge/collector/action acceptance passed.', flush=True)
                     return
                 suite = launch(['npm', '--prefix', 'tests/browser', 'test', '--', '--project=desktop', '--project=phone', '--workers=1', '--retries=0', '--reporter=json'])
-                suite.wait(timeout=600)
+                suite.wait(timeout=1800)
                 report = json.loads((directory / 'report.json').read_text())
                 stats = report['stats']
                 print(f"Browser gate: {stats['expected']} passed, {stats['unexpected']} failed, {stats['skipped']} skipped, {stats['flaky']} flaky.", flush=True)

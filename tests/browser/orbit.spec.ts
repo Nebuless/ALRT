@@ -248,7 +248,7 @@ test('Orbit does not adopt a delayed history response for an obsolete host', asy
     let entered!: () => void;
     const held = new Promise<void>(resolve => { release = resolve; });
     const started = new Promise<void>(resolve => { entered = resolve; });
-    await page.route('**/hosts/' + beta-restricted + '/history?**', async route => {
+    await page.route('**/hosts/' + restrictedHost + '/history?**', async route => {
         entered();
         await held;
         try { await route.continue(); } catch (error) { if (!route.request().failure()) throw error; }
@@ -429,7 +429,7 @@ test('Orbit stars stay fixed while independent fresh resource rings pulse, pause
     });
     await page.goto('/orbit?host=' + restrictedHost);
     await page.locator('.system-chooser').evaluate((chooser: HTMLDetailsElement) => { chooser.open = true; });
-    const sky = page.locator('#sky'), system = page.locator('.planet[data-host="' + beta-restricted + '"]');
+    const sky = page.locator('#sky'), system = page.locator('.planet[data-host="' + restrictedHost + '"]');
     await expect(system.locator('.resource-ring.high')).toHaveCount(3);
     await expect(page.locator('#retry')).toBeEnabled();
     await sky.scrollIntoViewIfNeeded();
@@ -540,7 +540,7 @@ test('Orbit opens on the sky and reveals a truthful selected metric card with in
     expect(initial.metrics.top).toBeGreaterThanOrEqual(initial.viewport);
     expect(initial.stage.height).toBeGreaterThan(initial.viewport * .8);
     expect(initial.legend.bottom).toBeLessThanOrEqual(initial.stage.bottom);
-    await page.locator('.planet[data-host="' + beta-restricted + '"]').click();
+    await page.locator('.planet[data-host="' + restrictedHost + '"]').click();
     const phone = (page.viewportSize()?.width ?? 0) <= 480;
     if (phone) await expect(page.locator('#node-card')).toBeHidden();
     else await expect(page.locator('#node-card')).toBeVisible();
@@ -577,7 +577,7 @@ for (const focus of ['planet', 'return']) {
         await expect(page.locator('#retry')).toBeEnabled();
         await page.locator('.system-chooser summary').click();
         await page.locator('#state-filter').selectOption('fresh');
-        const system = page.locator('.planet[data-host="' + beta-restricted + '"]');
+        const system = page.locator('.planet[data-host="' + restrictedHost + '"]');
         await system.focus();
         await system.press('Enter');
         await expect(page.locator('#sky')).toHaveClass(/close-up/);
@@ -595,7 +595,7 @@ test('Orbit held nodes stay transparent in overview and close-up', async ({ page
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/orbit');
     await expect(page.locator('#host-list option')).toHaveCount(3);
-    const system = page.locator('.planet[data-host="' + beta-restricted + '"]');
+    const system = page.locator('.planet[data-host="' + restrictedHost + '"]');
     for (const closeUp of [false, true]) {
         if (closeUp) await system.click();
         await system.scrollIntoViewIfNeeded();
@@ -618,7 +618,7 @@ test('Orbit touch release keeps the button transparent during planet zoom', asyn
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto('/orbit');
     await expect(page.locator('#retry')).toBeEnabled();
-    const system = page.locator('.planet[data-host="' + beta-restricted + '"]');
+    const system = page.locator('.planet[data-host="' + restrictedHost + '"]');
     await system.scrollIntoViewIfNeeded();
     const bounds = await system.boundingBox();
     if (!bounds) throw new Error('Expected visible planet');
