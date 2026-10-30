@@ -1,8 +1,12 @@
 name: Check
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_call:
+concurrency:
+  group: check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

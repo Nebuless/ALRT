@@ -12,6 +12,9 @@ an installed deployment.
 
 ## 0.1.2
 
+- Build with Go 1.27.3 to address GO-2026-6809 in certificate trust verification.
+- Reject nonregular install destinations, preserve historical release selections
+  and refuse pre-existing tags when creating verified release drafts.
 - Initial public Go `nebu-alrt` collector/delivery CLI source, with supporting
   Laravel/Livewire hub and Python integration source.
 - Public build and verification infrastructure, with synthetic references and
