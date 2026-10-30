@@ -110,6 +110,12 @@ def check(root, base=None):
     records, releases = load(root, "HEAD" if base else None)
     if base:
         ancestor = git(root, "merge-base", base, "HEAD").decode().strip()
+        old_registry_path = git(root, "ls-tree", ancestor, "--", ".changes/releases.json")
+        if old_registry_path:
+            _, old_releases = load(root, ancestor)
+            for version, names in old_releases.items():
+                if version not in releases or set(releases[version]) != set(names):
+                    raise Invalid(f"{version}: historical release selection is immutable")
         changes = git(root, "diff", "--no-renames", "--name-status", "-z", ancestor, "HEAD", "--", ".changes").split(b"\0")
         added = set()
         for index in range(0, len(changes) - 1, 2):

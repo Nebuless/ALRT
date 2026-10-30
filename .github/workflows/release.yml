@@ -21,7 +21,7 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -30,6 +30,19 @@ jobs:
         with:
           go-version: '1.27.2'
           cache-dependency-path: collector/go.mod
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '26.12.0'
+      - name: Cross-language test build dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential pkg-config libxml2-dev libcurl4-openssl-dev libonig-dev libssl-dev zlib1g-dev
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: tools/runtime
+          key: runtime-${{ runner.os }}-${{ runner.arch }}-php8.5.12-sqlite3.51.3-v1
+      - name: Pinned PHP and Composer for Go wire interoperability test
+        env:
+          COMPOSER_ALLOW_SUPERUSER: '1'
+        run: tools/bootstrap
       - run: cd collector && go test ./... && go vet ./...
       - name: Package and install verification
         env:
@@ -68,6 +81,9 @@ jobs:
           [[ "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
           python3 -B scripts/changes.py check
           python3 -B scripts/changes.py notes --version "$version" > dist/NOTES.md
+          # --target cannot override an existing tag. Refuse one rather than
+          # attaching verified bytes to an unrelated source revision.
+          test -z "$(git ls-remote --tags origin "refs/tags/v$version" "refs/tags/v$version^{}")"
           test -f "dist/nebu-alrt_${version}_linux_amd64.tar.gz"
           test -f "dist/nebu-alrt_${version}_linux_arm64.tar.gz"
           cp install.sh dist/install.sh

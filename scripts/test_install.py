@@ -104,6 +104,13 @@ shutil.copyfile(source, args[args.index('-o') + 1])
         self.assertNotEqual(self.install().returncode, 0)
         self.assertEqual(self.target.read_text(), "previous binary")
 
+    def test_directory_target_is_not_replaced(self):
+        self.target.unlink()
+        self.target.mkdir()
+        self.assertNotEqual(self.install().returncode, 0)
+        self.assertEqual(list(self.target.iterdir()), [])
+        self.assertEqual(list(self.prefix.glob(".nebu-alrt.*")), [])
+
     def test_relative_install_path(self):
         self.env["ALRT_INSTALL_DIR"] = "relative"
         self.assertNotEqual(self.install().returncode, 0)

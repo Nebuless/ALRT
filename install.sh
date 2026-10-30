@@ -26,8 +26,9 @@ chmod 700 "$work/nebu-alrt"
 case "$("$work/nebu-alrt" version)" in "nebu-alrt $version ("*) ;; *) echo 'Binary version mismatch' >&2; exit 1 ;; esac
 mkdir -p "$prefix"
 [ ! -L "$prefix/nebu-alrt" ] || { echo 'Refusing to replace symlink' >&2; exit 1; }
+if [ -e "$prefix/nebu-alrt" ] && [ ! -f "$prefix/nebu-alrt" ]; then echo 'Destination must be a regular file' >&2; exit 1; fi
 stage=$(mktemp "$prefix/.nebu-alrt.XXXXXX")
 install -m 755 "$work/nebu-alrt" "$stage"
-mv -f "$stage" "$prefix/nebu-alrt"
+mv -fT "$stage" "$prefix/nebu-alrt"
 stage=''
 printf 'Installed nebu-alrt %s to %s/nebu-alrt\nAdd %s to PATH if needed.\n' "$version" "$prefix" "$prefix"

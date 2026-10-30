@@ -147,6 +147,16 @@ class DiffTests(unittest.TestCase):
         with self.assertRaises(changes.Invalid):
             changes.check(self.root, "refs/heads/does-not-exist")
 
+    def test_historical_release_membership_cannot_change(self):
+        self.write(".changes/releases.json", json.dumps({"0.1.2": ["existing-record.md"]}))
+        self.commit()
+        base = self.git("rev-parse", "HEAD").strip()
+        self.write(".changes/new-record.md", VALID)
+        self.write(".changes/releases.json", json.dumps({"0.1.3": ["existing-record.md"]}))
+        self.commit()
+        with self.assertRaises(changes.Invalid):
+            changes.check(self.root, base)
+
     def test_merge_base_excludes_base_branch_only_changes(self):
         self.git("checkout", "-qb", "feature")
         self.write(".changes/new-record.md", VALID)
