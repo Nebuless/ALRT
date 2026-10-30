@@ -415,8 +415,11 @@ func TestFourHoursThreeIndependentHubsFreshSamplesAndRestart(t *testing.T) {
 			cancelContact()
 		}
 		done := make(chan struct{})
-		go func() { defer close(done); w.contacts(contactCtx) }()
+		// Replace a retained sample before starting its consumer. Otherwise the
+		// consumer can take it first, leaving a duplicate queued after OnContact
+		// cancels the context; that canceled retry would require another contact.
 		w.Publish(sample(n))
+		go func() { defer close(done); w.contacts(contactCtx) }()
 		return cancelContact, done
 	}
 	cancelPrimary, primaryDone := startContact("primary", count+1)
