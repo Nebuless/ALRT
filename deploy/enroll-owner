@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+"""Enroll only from the owner's trusted interactive terminal; never take a password argument."""
+import argparse
+import getpass
+from pathlib import Path
+import sys
+from deployment import artisan
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('base')
+parser.add_argument('--recover', action='store_true')
+parser.add_argument('--telegram', action='store_true')
+args = parser.parse_args()
+if not sys.stdin.isatty(): raise SystemExit('Run from a trusted interactive terminal')
+base = Path(args.base).absolute()
+email = getpass.getpass('Owner email (private): ')
+arguments = ['fleet:provision-owner', email]
+if args.recover: arguments.append('--recover')
+if args.telegram:
+    arguments += ['--telegram', '--telegram-chat='+getpass.getpass('Telegram chat ID (private): ')]
+artisan(base, (base/'current').resolve(), arguments)

@@ -1,0 +1,18 @@
+[Unit]
+Description=Nebuless @SERVICE@
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=@PYTHON@ @BASE@/current/deploy/service @BASE@ @SERVICE@
+WorkingDirectory=@BASE@
+Restart=always
+RestartSec=3
+TimeoutStopSec=75
+KillMode=control-group
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

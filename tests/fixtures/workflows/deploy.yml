@@ -1,0 +1,59 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '26.12.0'
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: '1.27.2'
+          cache-dependency-path: collector/go.mod
+      - name: Build prerequisites
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential pkg-config libxml2-dev libcurl4-openssl-dev libonig-dev libssl-dev zlib1g-dev
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: tools/runtime
+          key: runtime-${{ runner.os }}-php8.5.12-sqlite3.51.3-v1
+      - name: Install and gate
+        env:
+          COMPOSER_ALLOW_SUPERUSER: '1'
+        run: |
+          tools/bootstrap
+          ./bin/check
+          ./bin/acceptance
+      - name: Required authenticated browser gate
+        run: |
+          npm --prefix tests/browser ci --ignore-scripts
+          (cd tests/browser && npm exec -- playwright install --with-deps chromium)
+          ./bin/browser-check
+          ./bin/tailscale-browser-check
+      - name: Build one immutable artifact
+        run: |
+          mkdir dist
+          deploy/artifact dist/release.tar.gz --version "$GITHUB_SHA"
+          cd dist && sha256sum release.tar.gz > release.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nebuless-release
+          path: dist/
+          retention-days: 30
+          if-no-files-found: error
+  deploy:
+    needs: build
+    permissions:
+      contents: read
+      actions: read
+    uses: ./.github/workflows/deploy-hosts.yml
+    with:
+      run-id: ${{ github.run_id }}
+      version: ${{ github.sha }}
+    secrets: inherit

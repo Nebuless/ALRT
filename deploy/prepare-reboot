@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""Prepare native encrypted collector credentials and a hash-only owner provisioning request."""
+import getpass
+import os
+from pathlib import Path
+import sys
+from deployment import read_json
+from reboot_setup import prepare_target
+os.umask(0o077)
+if len(sys.argv) != 3 or not sys.stdin.isatty(): raise SystemExit('Use: prepare-reboot BASE PRIMARY_PUBLIC_JSON from a trusted terminal')
+try:
+    credential = os.environ.pop('NEBULESS_REBOOT_CREDENTIAL', None) or getpass.getpass('Private local reboot credential (at least 32 bytes): ')
+    request = prepare_target(Path(sys.argv[1]).absolute(),read_json(sys.argv[2]),credential)
+    print('Encrypted native credential and private enrollment request prepared at '+str(request)+'. No protected privilege was installed.')
+except Exception as error:
+    raise SystemExit('Reboot preparation refused ('+type(error).__name__+'). Preserve prior enrollment and review local prerequisites.')

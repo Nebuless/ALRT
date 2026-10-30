@@ -1,0 +1,870 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nebuless.local/contracts/telemetry-v1.schema.json",
+  "title": "Nebuless telemetry v1",
+  "description": "Slice-one privacy allowlist. No paths, arguments, environment, prompts or titles. Times use UTC RFC3339. Memory/disk/RSS are bytes, rates bytes/second, load is runnable load, CPU is percent (process CPU may exceed 100), PSI averages are percent and total is microseconds. A rate is null until a matching prior counter exists. Process identity is boot_id + pid + start_ticks at capabilities.clock_ticks_per_second. Scope is the configured measurement boundary; Primary is sandbox. One bounded category chunk is emitted; category_limit and partial explicitly mark truncation. Top lists are complete rankings of the observed process population up to 10, while total_observed counts all eligible observed candidates. Orphans contain proven observations only; first-seen adopted processes retain orphan_status uncertain in the other lists.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "machine_id",
+    "stream_id",
+    "sequence",
+    "boot_id",
+    "sampled_at",
+    "elapsed_seconds",
+    "scope",
+    "capabilities",
+    "coverage",
+    "metrics",
+    "processes"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": 1
+    },
+    "machine_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$",
+      "maxLength": 64
+    },
+    "stream_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$",
+      "maxLength": 64
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "boot_id": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+    },
+    "sampled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "elapsed_seconds": {
+      "anyOf": [
+        {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "host",
+        "sandbox"
+      ]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "os",
+        "process_identity",
+        "cpu",
+        "memory",
+        "disk",
+        "network",
+        "load",
+        "psi_cpu",
+        "psi_memory",
+        "psi_io",
+        "clock_ticks_per_second"
+      ],
+      "properties": {
+        "os": {
+          "const": "linux"
+        },
+        "process_identity": {
+          "type": "boolean"
+        },
+        "cpu": {
+          "type": "boolean"
+        },
+        "memory": {
+          "type": "boolean"
+        },
+        "disk": {
+          "type": "boolean"
+        },
+        "network": {
+          "type": "boolean"
+        },
+        "load": {
+          "type": "boolean"
+        },
+        "psi_cpu": {
+          "type": "boolean"
+        },
+        "psi_memory": {
+          "type": "boolean"
+        },
+        "psi_io": {
+          "type": "boolean"
+        },
+        "clock_ticks_per_second": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "processes"
+      ],
+      "properties": {
+        "processes": {
+          "$ref": "#/$defs/process_coverage"
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpu_percent",
+        "memory",
+        "disks",
+        "network",
+        "load",
+        "pressure"
+      ],
+      "properties": {
+        "cpu_percent": {
+          "$ref": "#/$defs/metric"
+        },
+        "memory": {
+          "$ref": "#/$defs/memory"
+        },
+        "disks": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/disk"
+          }
+        },
+        "network": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/network"
+          }
+        },
+        "load": {
+          "$ref": "#/$defs/load"
+        },
+        "pressure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cpu",
+            "memory",
+            "io"
+          ],
+          "properties": {
+            "cpu": {
+              "$ref": "#/$defs/psi"
+            },
+            "memory": {
+              "$ref": "#/$defs/psi"
+            },
+            "io": {
+              "$ref": "#/$defs/psi"
+            }
+          }
+        }
+      }
+    },
+    "processes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "top_cpu",
+        "top_rss",
+        "orphans",
+        "zombies",
+        "longest_running"
+      ],
+      "properties": {
+        "top_cpu": {
+          "$ref": "#/$defs/top_category"
+        },
+        "top_rss": {
+          "$ref": "#/$defs/top_category"
+        },
+        "orphans": {
+          "$ref": "#/$defs/category"
+        },
+        "zombies": {
+          "$ref": "#/$defs/category"
+        },
+        "longest_running": {
+          "$ref": "#/$defs/top_category"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "status"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "available",
+            "first_sample",
+            "unsupported",
+            "permission_denied",
+            "unavailable",
+            "counter_reset"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total_bytes",
+        "available_bytes",
+        "used_bytes"
+      ],
+      "properties": {
+        "total_bytes": {
+          "$ref": "#/$defs/metric"
+        },
+        "available_bytes": {
+          "$ref": "#/$defs/metric"
+        },
+        "used_bytes": {
+          "$ref": "#/$defs/metric"
+        }
+      }
+    },
+    "disk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "total_bytes",
+        "available_bytes",
+        "used_bytes"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$",
+          "maxLength": 64
+        },
+        "total_bytes": {
+          "$ref": "#/$defs/metric"
+        },
+        "available_bytes": {
+          "$ref": "#/$defs/metric"
+        },
+        "used_bytes": {
+          "$ref": "#/$defs/metric"
+        }
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "receive_bytes_per_second",
+        "transmit_bytes_per_second"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$",
+          "maxLength": 64
+        },
+        "receive_bytes_per_second": {
+          "$ref": "#/$defs/metric"
+        },
+        "transmit_bytes_per_second": {
+          "$ref": "#/$defs/metric"
+        }
+      }
+    },
+    "load": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "one",
+        "five",
+        "fifteen"
+      ],
+      "properties": {
+        "one": {
+          "$ref": "#/$defs/metric"
+        },
+        "five": {
+          "$ref": "#/$defs/metric"
+        },
+        "fifteen": {
+          "$ref": "#/$defs/metric"
+        }
+      }
+    },
+    "pressure_values": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "avg10",
+        "avg60",
+        "avg300",
+        "total_microseconds"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "available",
+            "unsupported",
+            "permission_denied",
+            "unavailable"
+          ]
+        },
+        "avg10": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "avg60": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "avg300": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total_microseconds": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "avg10": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "avg60": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "avg300": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "total_microseconds": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "avg10": {
+                "type": "null"
+              },
+              "avg60": {
+                "type": "null"
+              },
+              "avg300": {
+                "type": "null"
+              },
+              "total_microseconds": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "psi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "some",
+        "full"
+      ],
+      "properties": {
+        "some": {
+          "$ref": "#/$defs/pressure_values"
+        },
+        "full": {
+          "$ref": "#/$defs/pressure_values"
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boot_id",
+        "pid",
+        "start_ticks"
+      ],
+      "properties": {
+        "boot_id": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "start_ticks": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "parent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "status"
+      ],
+      "properties": {
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "known",
+            "unknown",
+            "exited"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "known"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "identity": {
+                "$ref": "#/$defs/identity"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "identity": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "name",
+        "state",
+        "parent",
+        "cpu_percent",
+        "rss_bytes",
+        "age_seconds",
+        "orphan_status",
+        "former_parent"
+      ],
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/identity"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "state": {
+          "type": "string",
+          "pattern": "^[RSDZTtXxKWPI]$"
+        },
+        "parent": {
+          "$ref": "#/$defs/parent"
+        },
+        "cpu_percent": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rss_bytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "age_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "orphan_status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "uncertain",
+            "proven"
+          ]
+        },
+        "former_parent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "orphan_status": {
+                "const": "proven"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "former_parent": {
+                "$ref": "#/$defs/identity"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "former_parent": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "top_category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "completeness",
+        "chunk_index",
+        "chunk_count",
+        "total_observed",
+        "reason"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/process"
+          },
+          "maxItems": 10
+        },
+        "completeness": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "chunk_index": {
+          "const": 0
+        },
+        "chunk_count": {
+          "const": 1
+        },
+        "total_observed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "unsupported",
+                "permission_denied",
+                "unavailable",
+                "enumeration_failed",
+                "process_scan_incomplete",
+                "category_limit",
+                "first_sample"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "completeness",
+        "chunk_index",
+        "chunk_count",
+        "total_observed",
+        "reason"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/process"
+          },
+          "maxItems": 4096
+        },
+        "completeness": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "chunk_index": {
+          "const": 0
+        },
+        "chunk_count": {
+          "const": 1
+        },
+        "total_observed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "unsupported",
+                "permission_denied",
+                "unavailable",
+                "enumeration_failed",
+                "process_scan_incomplete",
+                "category_limit",
+                "first_sample"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "process_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason",
+        "discovered",
+        "sampled",
+        "permission_denied",
+        "vanished",
+        "malformed",
+        "scan_limited",
+        "enumeration_limited"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "unavailable"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "unsupported",
+                "permission_denied",
+                "unavailable",
+                "enumeration_failed",
+                "process_scan_incomplete",
+                "category_limit",
+                "first_sample"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "discovered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sampled": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "permission_denied": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "vanished": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "malformed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scan_limited": {
+          "type": "boolean"
+        },
+        "enumeration_limited": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

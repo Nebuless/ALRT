@@ -1,0 +1,61 @@
+name: Deploy hosts
+on:
+  workflow_call:
+    inputs:
+      run-id:
+        type: string
+        required: true
+      version:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: nebuless-observation-fleet
+  cancel-in-progress: false
+jobs:
+  host:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        hub: [primary-hub, standby, beta-restricted]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    environment: production-${{ matrix.hub }}
+    concurrency:
+      group: deploy-${{ matrix.hub }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ inputs.version }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: nebuless-release
+          path: dist
+          run-id: ${{ inputs.run-id }}
+          github-token: ${{ github.token }}
+      - name: Verify artifact
+        run: cd dist && sha256sum --check release.sha256
+      - uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:nebuless-deploy
+      - name: Deploy this host independently
+        env:
+          DEPLOY_TARGET: ${{ vars.DEPLOY_TARGET }}
+          DEPLOY_BASE: ${{ vars.DEPLOY_BASE }}
+          DEPLOY_HOST_KEY: ${{ vars.DEPLOY_HOST_KEY }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          EXPECTED_VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          desired=$(python3 deploy/desired-release)
+          if ! printf '%s\n' "$desired" | grep -Fxq "version=$EXPECTED_VERSION"; then
+            echo 'A newer gated build superseded this queued deployment.'
+            exit 0
+          fi
+          python3 deploy/remote-release dist/release.tar.gz

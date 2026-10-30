@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""Run exactly one foreground service with this installation's private environment."""
+import os
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from deployment import read_json, environment, php_command
+
+base = Path(sys.argv[1]).absolute()
+service = sys.argv[2]
+release = (base/'current').resolve()
+config = read_json(base/'state/runtime.json')
+env = environment(base, release, service=service)
+os.umask(0o077)
+os.chdir(release/'apps/hub')
+php = php_command(base)
+commands = {
+    'auth': [config['node'], str(release/'apps/auth/src/server.mjs')],
+    'fpm': [config['fpm'], *php[1:], '-F', '-O', '-y', str(base/'state/fpm.conf')],
+    'http': [config['caddy'], 'run', '--config', str(base/'state/Caddyfile'), '--adapter', 'caddyfile'],
+    'scheduler': [*php, 'artisan', 'schedule:work', '--no-interaction'],
+    'urgent': [*php, 'artisan', 'queue:work', '--queue=urgent', '--sleep=1', '--tries=3', '--timeout=30', '--no-interaction'],
+    'maintenance': [*php, 'artisan', 'queue:work', '--queue=maintenance', '--sleep=3', '--tries=3', '--timeout=60', '--no-interaction'],
+    'collector': [str(release/'bin/nebu-alrt'), 'run', '--config', str(base/'state/collector.json')],
+    'proxy': [sys.executable, str(release/'deploy/connect-proxy.py'), str(base/'state/runtime.json')],
+}
+command = commands[service]
+os.execvpe(command[0], command, env)

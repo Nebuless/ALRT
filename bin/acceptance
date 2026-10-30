@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+export PATH="$root/tools/runtime/bin:$PATH"
+cd "$root"
+if [[ "${1:-}" == reference ]]; then
+  shift
+  exec python3 "$root/tests/acceptance/reference.py" "$@"
+fi
+if [[ "${1:-}" == cold-setup ]]; then
+  shift
+  exec python3 "$root/tests/acceptance/cold_setup.py" "$@"
+fi
+if [[ $# -ne 0 ]]; then
+  echo "Usage: bin/acceptance [reference --mode http|check|collector ... | cold-setup ...]" >&2
+  exit 2
+fi
+# File-backed logical-time faults, real isolated auth and fake external actions.
+# Actual reference measurements and owner drills have separate explicit inputs.
+go test -count=1 -timeout=20m -v tests/acceptance/*_test.go

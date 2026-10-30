@@ -1,0 +1,70 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      groma.md:
+        specifier: 0.6.6
+        version: 0.6.6
+
+packages:
+
+  groma.md-darwin-arm64@0.6.6:
+    resolution: {integrity: sha512-rvcqBjkDhvbl0R4hZnrFrT6TP/T2eZeBouw7K1BLTKrS89V/cfQXWHUh4OAhHKcloPgFIqOc7u3tQLQFRRqYKg==}
+    cpu: [arm64]
+    os: [darwin]
+
+  groma.md-linux-arm64@0.6.6:
+    resolution: {integrity: sha512-H1eUazx0Qz8yhiS1f84l1GoknUU+D4GD6oaJT69USymbv84uBosulZDOWZGL0j+7hmaMlJPnAgjMSyfiwGJEww==}
+    cpu: [arm64]
+    os: [linux]
+
+  groma.md-linux-x64@0.6.6:
+    resolution: {integrity: sha512-BFH2wtz///OSn4KCSfuc0B8WXv46DnnZfskQ5ar0xeebFSzbN4uYbcxLU2gsO0h1Fp+T6lPruvkB6iPN4AOOag==}
+    cpu: [x64]
+    os: [linux]
+
+  groma.md-windows-arm64@0.6.6:
+    resolution: {integrity: sha512-V2DMH2gyfH/fvGdGinh30K48kxrkC3RW04IOlwgnOmMs1zs71OBxINtyjgp6XHKWHEoDTmr+qyaGy+WjYqqKOw==}
+    cpu: [arm64]
+    os: [win32]
+
+  groma.md-windows-x64@0.6.6:
+    resolution: {integrity: sha512-QRv4Cttl4w4Qz5w7enhGWj0YieUdRMfw3Drgc+mA3Qon1/w9JSTJOlO1Rf6kslGvxACFzZ28avGpF5s1/7N5Eg==}
+    cpu: [x64]
+    os: [win32]
+
+  groma.md@0.6.6:
+    resolution: {integrity: sha512-msLPe2Mocpw8n68BXTsGBUG6pFbeL/PLcwgomLqnIXZ4NLoI62Fku6QMNzbGhgCvQA/LUGyS5BwaISSBLC2WWA==}
+    engines: {node: '>=20.19.0'}
+    hasBin: true
+
+snapshots:
+
+  groma.md-darwin-arm64@0.6.6:
+    optional: true
+
+  groma.md-linux-arm64@0.6.6:
+    optional: true
+
+  groma.md-linux-x64@0.6.6:
+    optional: true
+
+  groma.md-windows-arm64@0.6.6:
+    optional: true
+
+  groma.md-windows-x64@0.6.6:
+    optional: true
+
+  groma.md@0.6.6:
+    optionalDependencies:
+      groma.md-darwin-arm64: 0.6.6
+      groma.md-linux-arm64: 0.6.6
+      groma.md-linux-x64: 0.6.6
+      groma.md-windows-arm64: 0.6.6
+      groma.md-windows-x64: 0.6.6

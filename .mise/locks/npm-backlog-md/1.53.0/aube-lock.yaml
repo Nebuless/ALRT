@@ -1,0 +1,78 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      backlog.md:
+        specifier: 1.53.0
+        version: 1.53.0
+
+packages:
+
+  backlog.md-darwin-arm64@1.53.0:
+    resolution: {integrity: sha512-NQT4XHXoeudV5rZ/JVe039eTJV3hKcCdnEZd6rI1GCuMFnSYY9t5NaiFk2f/OzJTJPcFanpVnKOGefLiPs37uw==}
+    cpu: [arm64]
+    os: [darwin]
+
+  backlog.md-darwin-x64@1.53.0:
+    resolution: {integrity: sha512-fC0vCuhGfHFAvvDNRf1dN/7F3GdmbuSZGzMVVHKx0+To4cakLOwuqOUhPX5KIGXeK6minHBMPIxIJFFtae2xvA==}
+    cpu: [x64]
+    os: [darwin]
+
+  backlog.md-linux-arm64@1.53.0:
+    resolution: {integrity: sha512-7EjAd91HexoteCYsz0jIKKMNxPaVg5gPv1LkcqHHiOpmCjmz3bDb02Wsk/VecPGeNFqFgpbpLyYI184UCCW0vA==}
+    cpu: [arm64]
+    os: [linux]
+
+  backlog.md-linux-x64@1.53.0:
+    resolution: {integrity: sha512-EusW2vDzNjzKRaloJ3yPNgGwjqJ8Fow8aKdBRLZGs6+Pb1V9CREyhqOOia/H1OvQ86M74gjVBnnIpCDRrU0m8w==}
+    cpu: [x64]
+    os: [linux]
+
+  backlog.md-windows-arm64@1.53.0:
+    resolution: {integrity: sha512-ia0gxBfewMhQSaGprz8DH1FA3iel3OqbEjngdZDKjfQrMNk8gqkmDUM3hQr1IMOXsq/YbteRQhdlHpCLUgLBoA==}
+    cpu: [arm64]
+    os: [win32]
+
+  backlog.md-windows-x64@1.53.0:
+    resolution: {integrity: sha512-EzNL6Rx/DA6Hnq52wNAP78MTAK23xpBi2aAqMqObW3LhjhefG3h4M5SjTSUkizbH2FyvYsZlahlYJFdxUpz31g==}
+    cpu: [x64]
+    os: [win32]
+
+  backlog.md@1.53.0:
+    resolution: {integrity: sha512-VfYdR7RGu+mgEpSbHpBfdsyHVlJ+d4DIRzixkmyLqsfgCk4pLPDRhNkbu6dU3UgLEbQfxKhDuXUIbN/RLyGk1A==}
+    hasBin: true
+
+snapshots:
+
+  backlog.md-darwin-arm64@1.53.0:
+    optional: true
+
+  backlog.md-darwin-x64@1.53.0:
+    optional: true
+
+  backlog.md-linux-arm64@1.53.0:
+    optional: true
+
+  backlog.md-linux-x64@1.53.0:
+    optional: true
+
+  backlog.md-windows-arm64@1.53.0:
+    optional: true
+
+  backlog.md-windows-x64@1.53.0:
+    optional: true
+
+  backlog.md@1.53.0:
+    optionalDependencies:
+      backlog.md-darwin-arm64: 1.53.0
+      backlog.md-darwin-x64: 1.53.0
+      backlog.md-linux-arm64: 1.53.0
+      backlog.md-linux-x64: 1.53.0
+      backlog.md-windows-arm64: 1.53.0
+      backlog.md-windows-x64: 1.53.0

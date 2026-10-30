@@ -1,0 +1,107 @@
+config_version = "0"
+cli_version = "0.643.0"
+# Local definitions only: no default source, managed runtime, or plugin download.
+source = []
+
+# Deny by default, then admit maintained first-party code and test inputs.
+# Ordered exceptions also restore first-party config/database files from defaults.
+exclude_patterns = [
+  "**",
+  "!apps/auth/src/**", "!apps/auth/test/**",
+  "!apps/hub/app/**", "!apps/hub/bootstrap/**", "!apps/hub/config/**",
+  "!apps/hub/database/**", "!apps/hub/resources/**", "!apps/hub/routes/**",
+  "!apps/hub/tests/**", "!apps/hub/artisan", "!apps/hub/*.php", "!apps/hub/*.js",
+  "!collector/**", "!contracts/**", "!deploy/**", "!bin/**", "!tests/**",
+  "!tools/bootstrap", "!tools/build-runtime", "!tools/*-probe.*",
+  "**/node_modules/**", "**/vendor/**", "**/runtime/**", "**/storage/**",
+  "**/bootstrap/cache/**", "**/public/**", "**/build/**", "**/dist/**",
+  "**/generated/**", "**/__pycache__/**", "**/*.pyc", "**/*.min.*",
+  "**/playwright-report/**", "**/test-results/**", "**/coverage/**",
+  "**/package-lock.json", "**/composer.lock", "**/go.sum",
+]
+test_patterns = [
+  "apps/auth/test/**", "apps/hub/tests/**", "collector/**/*_test.go",
+  "tests/**", "contracts/fixtures/**",
+  "apps/hub/database/factories/**", "apps/hub/database/seeders/**",
+]
+
+# Version below identifies this local adapter, not the installed executable.
+[[plugin]]
+name = "local-php"
+version = "1.0.0"
+[[plugin]]
+name = "local-gofmt"
+version = "1.0.0"
+[[plugin]]
+name = "local-js-syntax"
+version = "1.0.0"
+
+[plugins.definitions.local-php]
+file_types = ["php"]
+[plugins.definitions.local-php.drivers.pint]
+script = "cd apps/hub && ../../bin/php vendor/bin/pint --test"
+target = { type = "literal", path = "apps/hub" }
+success_codes = [0]
+output = "pass_fail"
+cache_results = false
+[plugins.definitions.local-php.drivers.phpstan]
+script = "cd apps/hub && ../../bin/php vendor/bin/phpstan analyse --no-progress --memory-limit=512M --error-format=json"
+target = { type = "literal", path = "apps/hub" }
+success_codes = [0, 1]
+output = "stdout"
+output_format = "phpstan"
+cache_results = false
+[plugins.definitions.local-php.drivers.rector]
+script = "cd apps/hub && ../../bin/php vendor/bin/rector process --dry-run --no-progress-bar"
+target = { type = "literal", path = "apps/hub" }
+success_codes = [0]
+output = "pass_fail"
+cache_results = false
+
+[plugins.definitions.local-gofmt]
+file_types = ["go"]
+[plugins.definitions.local-gofmt.drivers.format]
+script = 'result=$(gofmt -l ${target}) || exit; if [ -n "$result" ]; then printf "%s\n" "$result"; exit 1; fi'
+batch = true
+success_codes = [0]
+output = "pass_fail"
+cache_results = false
+
+[plugins.definitions.local-js-syntax]
+file_types = ["javascript"]
+[plugins.definitions.local-js-syntax.drivers.syntax]
+script = "node --check ${target}"
+success_codes = [0]
+output = "pass_fail"
+cache_results = false
+
+# Keep the audit's default thresholds visible, including duplication.
+[smells]
+mode = "comment"
+[smells.boolean_logic]
+enabled = true
+threshold = 4
+[smells.nested_control_flow]
+enabled = true
+threshold = 5
+[smells.function_parameters]
+enabled = true
+threshold = 6
+[smells.return_statements]
+enabled = true
+threshold = 6
+[smells.file_complexity]
+enabled = true
+threshold = 50
+[smells.function_complexity]
+enabled = true
+threshold = 18
+[smells.identical_code]
+enabled = true
+threshold = 15
+[smells.similar_code]
+enabled = true
+threshold = 15
+[smells.duplication]
+filter_patterns = []
+nodes_threshold = 64

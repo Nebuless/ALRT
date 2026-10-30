@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""One-time unprivileged installation. Never changes an existing installation."""
+import json
+import os
+from pathlib import Path
+import socket
+import subprocess
+import sys
+import urllib.parse
+from deployment import initialize, stage, migrate, switch, read_json, configured_services, unit_definitions, write_json
+
+
+def preflight(config):
+    result = subprocess.run([config.get('tailscale', '/usr/bin/tailscale'), 'serve', 'status', '--json'], check=True, capture_output=True, text=True)
+    serve = json.loads(result.stdout)
+    port = str(urllib.parse.urlparse(config['origin']).port or 443)
+    if port in serve.get('TCP', {}): raise ValueError('Private HTTPS port already occupied')
+    sockets = []
+    try:
+        for port in [config.get('backend_port',18444), config.get('fpm_port',19444), config.get('auth_port',19445), *([config.get('proxy_port',18445)] if config.get('proxy') else [])]:
+            sock = socket.socket(); sockets.append(sock); sock.bind(('127.0.0.1', port))
+    finally:
+        for sock in sockets: sock.close()
+    if config['manager'] == 'systemd':
+        result = subprocess.run(['loginctl', 'show-user', str(os.getuid()), '-p', 'Linger', '--value'], capture_output=True, text=True, check=True)
+        if result.stdout.strip() != 'yes': raise ValueError('User service boot needs owner-provisioned linger')
+    return serve
+
+
+def configure(base):
+    config = read_json(base/'state/runtime.json')
+    release = (base/'current').resolve()
+    origin = urllib.parse.urlparse(config['origin'])
+    # Serve is the only ingress. Accept its loopback HTTPS forwarding and fixed origin.
+    (base/'state/Caddyfile').write_text(f'''{{
+    admin off
+    auto_https off
+    log default {{
+        output stderr
+        level ERROR
+    }}
+}}
+http://:{config['backend_port']} {{
+    bind 127.0.0.1
+    @ingress {{
+        header X-Forwarded-Proto https
+        host {origin.hostname}
+    }}
+    handle @ingress {{
+        root * {base}/current/apps/hub/public
+        php_fastcgi 127.0.0.1:{config['fpm_port']} {{
+            env HTTPS on
+            env SERVER_PORT {origin.port or 443}
+            env HTTP_HOST {origin.netloc}
+            env NEBULESS_TAILSCALE_INGRESS 1
+            env NEBULESS_TAILSCALE_SOURCE {{http.request.header.X-Forwarded-For}}
+        }}
+        file_server
+    }}
+    respond "Private HTTPS ingress required" 400
+}}
+''')
+    root_setting = '\nuser = nobody\ngroup = nogroup' if os.getuid() == 0 else ''
+    fpm_sink = 'syslog' if config['manager'] == 'systemd' else '/proc/self/fd/2'
+    (base/'state/fpm.conf').write_text(f'''[global]
+pid = {base}/run/fpm.pid
+error_log = {fpm_sink}
+daemonize = no
+[nebuless]
+listen = 127.0.0.1:{config['fpm_port']}
+listen.allowed_clients = 127.0.0.1
+pm = ondemand
+pm.max_children = 3
+pm.process_idle_timeout = 15s
+catch_workers_output = yes
+decorate_workers_output = no
+php_admin_flag[log_errors] = on
+php_admin_flag[display_errors] = off
+php_admin_value[error_log] = /proc/self/fd/2
+clear_env = no
+chdir = {base}/current/apps/hub
+{root_setting}
+''')
+    services = configured_services(base)
+    if config['manager'] == 'supervisor':
+        head = f'''[unix_http_server]
+file={base}/run/supervisor.sock
+chmod=0600
+[supervisord]
+pidfile={base}/run/supervisord.pid
+logfile={base}/state/logs/supervisord.log
+logfile_maxbytes=2MB
+logfile_backups=2
+childlogdir={base}/state/logs
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface
+[supervisorctl]
+serverurl=unix://{base}/run/supervisor.sock
+'''
+        template = (release/'deploy/supervisor/program.conf').read_text()
+        (base/'supervisor.conf').write_text(head+'\n'.join(template.replace('@SERVICE@', name).replace('@BASE@', str(base)).replace('@PYTHON@', config.get('python',sys.executable)) for name in services))
+    else:
+        units = Path.home()/'.config/systemd/user'; units.mkdir(parents=True, exist_ok=True)
+        for name, content in unit_definitions(base, release).items():
+            unit = units/('nebuless-'+name+'.service')
+            if unit.exists() and unit.read_text() != content: raise ValueError('Refusing to replace a different unit')
+            unit.write_text(content)
+    return services
+
+
+def start(base, services):
+    config = read_json(base/'state/runtime.json')
+    if config['manager'] == 'supervisor':
+        if (base/'run/supervisord.pid').exists():
+            subprocess.run(['supervisorctl','-c',str(base/'supervisor.conf'),'reread'],check=True)
+            subprocess.run(['supervisorctl','-c',str(base/'supervisor.conf'),'update'],check=True)
+        else: subprocess.run(['supervisord','-c',str(base/'supervisor.conf')],check=True)
+    else:
+        subprocess.run(['systemctl','--user','daemon-reload'],check=True)
+        subprocess.run(['systemctl','--user','enable','--now', *['nebuless-'+name+'.service' for name in services]],check=True)
+
+
+if __name__ == '__main__':
+    try:
+        os.umask(0o077)
+        if len(sys.argv) != 4: raise ValueError('Usage: deploy/install ABSOLUTE_BASE CONFIG_JSON ARTIFACT')
+        base = Path(sys.argv[1]).absolute(); config = read_json(sys.argv[2])
+        previous = preflight(config)
+        initialize(base, config)
+        write_json(base/'state/serve-before.json', previous)
+        release = stage(base, sys.argv[3]); migrate(base, release); switch(base, release)
+        start(base, configure(base))
+        port = str(urllib.parse.urlparse(config['origin']).port or 443)
+        # Private ingress is a separate owner-authorized step; Primary's service UID
+        # intentionally has no authority to mutate the shared Tailscale daemon.
+        write_json(base/'deployment.json',{'desired':release.name,'active':release.name,'status':'pending','reason':'Run health after collector enrollment'})
+        print('Installed observation services. Owner and Telegram remain locally unconfigured.')
+    except Exception as error:
+        print('Installation failed ('+type(error).__name__+'). Inspect private local logs; no existing Serve endpoint was replaced.',file=sys.stderr)
+        sys.exit(1)

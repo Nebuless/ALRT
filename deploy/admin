@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+"""Run Laravel's ordinary local administration CLI with the installed environment."""
+from pathlib import Path
+import sys
+from deployment import artisan
+base = Path(sys.argv[1]).absolute()
+artisan(base, (base/'current').resolve(), sys.argv[2:])

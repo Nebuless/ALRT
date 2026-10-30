@@ -1,0 +1,40 @@
+/* Generated from design/tokens.json. Run node design/build-tokens.mjs. */
+:root {
+    --color-sky: #07080F;
+    --color-surface: #0D0F1C;
+    --color-ink: #ECEAF4;
+    --color-muted: #A9A6C0;
+    --color-hairline: rgba(236,234,244,.14);
+    --color-active: rgba(236,234,244,.13);
+    --color-silent: #FF8A5B;
+    --color-pressure: #F5C451;
+    --color-healthy: #5FD3C6;
+    --color-on-amber: #1A1404;
+    --color-fog-violet: 122,98,255;
+    --color-fog-teal: 64,190,200;
+    --color-fog-pink: 220,120,200;
+    --font-voice: 'Newsreader', Georgia, serif;
+    --font-ui: 'Geist', system-ui, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --radius-nav: 10px;
+    --radius-active: 6px;
+    --radius-panel: 16px;
+    --radius-round: 50%;
+    --motion-quick: 160ms;
+    --motion-ease: cubic-bezier(.2,.7,.2,1);
+    --layer-decoration: 0;
+    --layer-content: 1;
+    --layer-navigation: 10;
+    --layer-skip: 20;
+    color-scheme: dark;
+}

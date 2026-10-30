@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+"""Add only this installation's still-unused private HTTPS endpoint."""
+import json
+from pathlib import Path
+import subprocess
+import sys
+from urllib.parse import urlparse
+base = Path(sys.argv[1]).absolute()
+config = json.loads((base/'state/runtime.json').read_text())
+port = str(urlparse(config['origin']).port or 443)
+state = json.loads(subprocess.check_output([config['tailscale'],'serve','status','--json'], text=True))
+if port in state.get('TCP',{}):
+    raise SystemExit('HTTPS port occupied; inspect it rather than replacing an existing endpoint')
+subprocess.run([config['tailscale'],'serve','--bg','--https='+port,'http://127.0.0.1:'+str(config['backend_port'])],check=True)
+after = json.loads(subprocess.check_output([config['tailscale'],'serve','status','--json'],text=True))
+for key in ('TCP','Web'):
+    for name,value in state.get(key,{}).items():
+        if after.get(key,{}).get(name) != value: raise SystemExit('Existing Serve entry changed; investigate immediately')
+print('Private HTTPS endpoint added; all existing Serve entries preserved.')

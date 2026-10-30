@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""Prepare Primary signing authority once; never silently rotate a missing or existing key."""
+import os
+from pathlib import Path
+import secrets
+import sys
+from deployment import artisan, read_json, write_json
+os.umask(0o077)
+base = Path(sys.argv[1]).absolute()
+config, env = read_json(base/'state/runtime.json'), read_json(base/'state/env.json')
+if config['name'] != 'Primary-Hub' or config['role'] != 'primary': raise SystemExit('Primary Primary installation required')
+key = base/'state/action-signing.pem'
+public = base/'state/primary-public.json'
+prior = read_json(public) if public.exists() else None
+if (key.exists() and not prior) or (prior and not key.exists()): raise SystemExit('Incomplete prior signer setup requires explicit recovery; no key was created or replaced')
+key_id = env.get('NEBULESS_ACTION_KEY_ID') or (prior['key_id'] if prior else 'primary-'+secrets.token_hex(12))
+result = artisan(base,(base/'current').resolve(),['fleet:prepare-primary-actions',str(key),key_id],capture=True)
+identity = __import__('json').loads(result.stdout)
+if prior and identity != prior: raise SystemExit('Primary public identity changed; preserve previous authority')
+write_json(public,identity)
+env['NEBULESS_ACTION_PRIVATE_KEY_FILE'],env['NEBULESS_ACTION_KEY_ID'] = str(key),key_id
+write_json(base/'state/env.json',env)
+temporary = base/'state/hub.env.new'
+with temporary.open('w') as file:
+    os.chmod(temporary,0o600)
+    file.write(''.join(name+'='+__import__('json').dumps(value)+'\n' for name,value in env.items()));file.flush();os.fsync(file.fileno())
+os.replace(temporary,base/'state/hub.env')
+from reboot_setup import sync_directory
+sync_directory(base/'state')
+print('Primary signing identity prepared. Public enrollment material: '+str(public)+'. Restart owned hub services to load signing configuration.')

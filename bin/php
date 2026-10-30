@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+runtime=${NEBULESS_PHP:-"$root/tools/runtime/bin/php"}
+if [[ ! -x "$runtime" ]]; then
+  echo "PHP runtime missing. Run tools/build-runtime or set NEBULESS_PHP." >&2
+  exit 1
+fi
+export LD_LIBRARY_PATH="$(dirname "$runtime")/../lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+exec "$runtime" "$@"

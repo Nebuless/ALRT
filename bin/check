@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+export PATH="$root/tools/runtime/bin:$PATH"
+"$root/deploy/check-runtime" >/dev/null
+node "$root/tools/node-runtime-probe.mjs" >/dev/null
+npm --prefix "$root/apps/auth" test
+cd "$root/apps/hub"
+"$root/bin/php" vendor/bin/pint --test
+"$root/bin/php" vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+"$root/bin/php" vendor/bin/rector process --dry-run --no-progress-bar
+"$root/bin/php" vendor/bin/pest --compact
+cd "$root/collector"
+unformatted=$(gofmt -l .)
+if [[ -n "$unformatted" ]]; then
+  printf 'Go formatting required:\n%s\n' "$unformatted" >&2
+  exit 1
+fi
+golangci-lint run
+go test ./...
+npm --prefix "$root/apps/hub" run build

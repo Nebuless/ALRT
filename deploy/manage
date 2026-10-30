@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+"""Manage only the services owned by this installation."""
+from pathlib import Path
+import runpy
+import sys
+from deployment import restart, read_json
+import subprocess
+base = Path(sys.argv[1]).absolute()
+command = sys.argv[2]
+if command == 'refresh':
+    installer = runpy.run_path(str(base/'current/deploy/install'))
+    installer['start'](base, installer['configure'](base))
+elif command == 'restart': restart(base)
+elif command == 'status':
+    config = read_json(base/'state/runtime.json')
+    if config['manager']=='supervisor': subprocess.run(['supervisorctl','-c',str(base/'supervisor.conf'),'status'],check=True)
+    else: subprocess.run(['systemctl','--user','--no-pager','status','nebuless-auth','nebuless-fpm','nebuless-http','nebuless-scheduler','nebuless-urgent','nebuless-maintenance','nebu-alrt'],check=True)
+else: raise SystemExit('Use refresh, restart or status')

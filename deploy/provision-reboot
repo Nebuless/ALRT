@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Owner-root, first-enrollment-only protected helper provisioning; never invokes reboot."""
+import hashlib
+import os
+from pathlib import Path
+import sys
+from deployment import read_json
+from reboot_setup import provision, validate_installed_target
+os.umask(0o077)
+if len(sys.argv) != 3: raise SystemExit('Use: provision-reboot BASE PRIVATE_REQUEST_JSON from the reviewed trusted owner terminal')
+try:
+    base = Path(sys.argv[1]).absolute()
+    release = (base/'current').resolve()
+    binary = release/'bin/nebuless-reboot-helper'
+    manifest = read_json(release/'release.json')
+    if hashlib.sha256(binary.read_bytes()).hexdigest() != manifest['files']['bin/nebuless-reboot-helper']: raise ValueError('Reviewed helper artifact digest mismatch')
+    policy = read_json(sys.argv[2])
+    validate_installed_target(base,policy)
+    provision(policy,binary)
+    print('Fixed protected helper enrolled once. Restart only the target collector after reloading its user units; verify actual capability on Primary. No reboot was invoked.')
+except Exception as error:
+    raise SystemExit('Protected enrollment refused ('+type(error).__name__+'). Existing history is never overwritten; compatible real sudo and owner root provisioning are required.')

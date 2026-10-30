@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+cd "$root"
+if [[ ! -x tools/runtime/bin/php ]]; then tools/build-runtime; fi
+temporary=$(mktemp -d)
+trap 'rm -rf "$temporary"' EXIT
+curl -fsSL https://getcomposer.org/installer -o "$temporary/composer-setup.php"
+expected=$(curl -fsSL https://composer.github.io/installer.sig)
+actual=$(sha384sum "$temporary/composer-setup.php" | cut -d' ' -f1)
+[[ "$expected" == "$actual" ]]
+bin/php "$temporary/composer-setup.php" --version=2.10.3 --install-dir=tools --filename=composer.phar
+curl -fsSL https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-linux-amd64.tar.gz -o "$temporary/lint.tar.gz"
+echo 'ab90aeb7b066f92a33415b638a50fe5344bbb75a0d32ad30cc248d88f81032ab  '"$temporary/lint.tar.gz" | sha256sum -c
+tar -xzf "$temporary/lint.tar.gz" -C "$temporary"
+cp "$temporary/golangci-lint-2.14.0-linux-amd64/golangci-lint" tools/runtime/bin/golangci-lint
+curl -fsSL https://github.com/caddyserver/caddy/releases/download/v2.11.7/caddy_2.11.7_linux_amd64.tar.gz -o "$temporary/caddy.tar.gz"
+echo '727b91701a392de6ebc5027509f548bf39979e5216340d0faed8fa5e69c84f8b  '"$temporary/caddy.tar.gz" | sha256sum -c
+tar -xzf "$temporary/caddy.tar.gz" -C "$temporary" caddy
+cp "$temporary/caddy" tools/runtime/bin/caddy
+bin/composer install --working-dir=apps/hub --no-interaction --prefer-dist
+npm --prefix apps/hub ci --ignore-scripts
+npm --prefix apps/auth ci --ignore-scripts
+git config core.hooksPath .githooks

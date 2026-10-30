@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+prefix=${NEBULESS_RUNTIME_DIR:-"$root/tools/runtime"}
+build=$(mktemp -d)
+trap 'rm -rf "$build"' EXIT
+mkdir -p "$prefix"
+cd "$build"
+curl -fsSL https://sqlite.org/2026/sqlite-autoconf-3510300.tar.gz -o sqlite.tar.gz
+curl -fsSL https://www.php.net/distributions/php-8.5.12.tar.xz -o php.tar.xz
+sha256sum -c <<'SUMS'
+81f5be397049b0cae1b167f2225af7646fc0f82e4a9b3c48c9ea3a533e21d77a  sqlite.tar.gz
+08bc2eba2a588654ade1357174aa646b761556c862dda0678345ee29ed481209  php.tar.xz
+SUMS
+tar -xzf sqlite.tar.gz
+tar -xJf php.tar.xz
+cd sqlite-autoconf-3510300
+./configure --prefix="$prefix" --disable-readline --disable-static
+make -j"${BUILD_JOBS:-2}"
+make install
+cd ../php-8.5.12
+export PKG_CONFIG_PATH="$prefix/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+export LDFLAGS="${LDFLAGS:-} -Wl,-rpath,$prefix/lib"
+./configure --prefix="$prefix" --disable-all --enable-cli --enable-fpm \
+  --enable-pdo --with-pdo-sqlite --with-sqlite3 --with-libxml --enable-simplexml --enable-dom --enable-xml \
+  --enable-xmlreader --enable-xmlwriter --enable-mbstring --with-openssl \
+  --with-curl --enable-tokenizer --enable-fileinfo --enable-session \
+  --enable-filter --enable-ctype --enable-phar --enable-bcmath \
+  --enable-pcntl --enable-posix --enable-sockets --with-iconv --with-zlib
+make -j"${BUILD_JOBS:-2}"
+make install
+"$prefix/bin/php" -r 'if (SQLite3::version()["versionNumber"] < 3051003) { exit(1); } echo "PHP ", PHP_VERSION, "; SQLite ", SQLite3::version()["versionString"], PHP_EOL;'

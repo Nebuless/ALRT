@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""Bundle a probed PHP/FPM prefix with its non-glibc dependencies for Linux amd64."""
+import argparse
+import gzip
+import io
+from pathlib import Path
+import re
+import subprocess
+import tarfile
+import tempfile
+from deployment import sha256_file
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('prefix'); parser.add_argument('output'); parser.add_argument('--caddy', required=True)
+args = parser.parse_args()
+prefix = Path(args.prefix).resolve()
+files = {'bin/php': prefix/'bin/php', 'sbin/php-fpm': prefix/'sbin/php-fpm', 'bin/caddy': Path(args.caddy).resolve()}
+extensions = list((prefix/'lib/php/extensions').glob('*/iconv.so'))
+if extensions: files['lib/iconv.so'] = extensions[0]
+queue = list(files.values())
+seen = set()
+while queue:
+    binary = queue.pop()
+    if binary in seen: continue
+    seen.add(binary)
+    result = subprocess.run(['ldd', str(binary)], capture_output=True, text=True)
+    for name, path in re.findall(r'\s+(\S+) => (/\S+)', result.stdout):
+        if name in ('libc.so.6','libm.so.6','libpthread.so.0','libdl.so.2','librt.so.1'): continue
+        target = Path(path).resolve()
+        files['lib/'+name] = target
+        queue.append(target)
+with open(args.output,'wb') as raw, gzip.GzipFile(fileobj=raw,mode='wb',filename='',mtime=0,compresslevel=1) as zipped, tarfile.open(fileobj=zipped,mode='w') as tar:
+    for name,path in sorted(files.items()):
+        data = path.read_bytes(); info = tarfile.TarInfo(name)
+        info.size, info.mode = len(data), 0o555
+        tar.addfile(info,io.BytesIO(data))
+print('Runtime SHA256 '+sha256_file(args.output))

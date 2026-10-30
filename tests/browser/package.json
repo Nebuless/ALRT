@@ -1,0 +1,7 @@
+{
+  "name": "nebuless-browser-checks",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "playwright test", "test:design": "playwright test design.spec.ts" },
+  "devDependencies": { "@playwright/test": "1.56.1" }
+}

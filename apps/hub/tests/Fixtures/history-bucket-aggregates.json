@@ -1,0 +1,2317 @@
+[
+    {
+        "id": 1,
+        "resolution": 60,
+        "bucket_at": "2026-10-15T12:00:00+00:00",
+        "aggregate": {
+            "count": 4,
+            "backfilled_count": 1,
+            "intervals": [
+                [
+                    1792065600,
+                    1792065602
+                ],
+                [
+                    1792065650,
+                    1792065660
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 3,
+                    "duration": 12,
+                    "weighted_sum": 1188,
+                    "min": 0,
+                    "max": 99
+                },
+                "memory.total_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 13958643712,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 6979321856,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 6979321856,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 1.3,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 2.6,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 3.9,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 139586437120,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 69793218560,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 69793218560,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 13312,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 6656,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 99,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-4",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:01:00+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-4",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:01:00+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    },
+    {
+        "id": 2,
+        "resolution": 3600,
+        "bucket_at": "2026-10-15T12:00:00+00:00",
+        "aggregate": {
+            "count": 4,
+            "backfilled_count": 1,
+            "intervals": [
+                [
+                    1792065600,
+                    1792065602
+                ],
+                [
+                    1792065650,
+                    1792065660
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 3,
+                    "duration": 12,
+                    "weighted_sum": 1188,
+                    "min": 0,
+                    "max": 99
+                },
+                "memory.total_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 13958643712,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 6979321856,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 6979321856,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 1.3,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 2.6,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 3.9,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 139586437120,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 69793218560,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 69793218560,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 13312,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 4,
+                    "duration": 13,
+                    "weighted_sum": 6656,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 99,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-4",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:01:00+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-4",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:01:00+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    },
+    {
+        "id": 3,
+        "resolution": 60,
+        "bucket_at": "2026-10-15T11:59:00+00:00",
+        "aggregate": {
+            "count": 4,
+            "backfilled_count": 2,
+            "intervals": [
+                [
+                    1792065591,
+                    1792065600
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 3,
+                    "duration": 3.5,
+                    "weighted_sum": 346.5,
+                    "min": 10,
+                    "max": 99
+                },
+                "memory.total_bytes": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 13421772800,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 6710886400,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 6710886400,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 1.25,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 2.5,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 3.75,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 134217728000,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 67108864000,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 67108864000,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 12800,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 4,
+                    "duration": 12.5,
+                    "weighted_sum": 6400,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 99,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-2",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:00:02+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-2",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:00:02+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    },
+    {
+        "id": 4,
+        "resolution": 3600,
+        "bucket_at": "2026-10-15T11:00:00+00:00",
+        "aggregate": {
+            "count": 5,
+            "backfilled_count": 3,
+            "intervals": [
+                [
+                    1792062000,
+                    1792062001
+                ],
+                [
+                    1792065591,
+                    1792065600
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 4,
+                    "duration": 4.5,
+                    "weighted_sum": 366.5,
+                    "min": 10,
+                    "max": 99
+                },
+                "memory.total_bytes": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 14495514624,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 7247757312,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 7247757312,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 1.35,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 2.7,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 4.05,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 144955146240,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 72477573120,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 72477573120,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 13824,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 5,
+                    "duration": 13.5,
+                    "weighted_sum": 6912,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 99,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-2",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:00:02+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-2",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 99,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T12:00:02+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    },
+    {
+        "id": 5,
+        "resolution": 60,
+        "bucket_at": "2026-10-15T10:59:00+00:00",
+        "aggregate": {
+            "count": 1,
+            "backfilled_count": 1,
+            "intervals": [
+                [
+                    1792061991,
+                    1792062000
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 180,
+                    "min": 20,
+                    "max": 20
+                },
+                "memory.total_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 9663676416,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 4831838208,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 4831838208,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 0.9,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 1.8,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 2.6999999999999997,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 96636764160,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 48318382080,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 48318382080,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 9216,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 4608,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 20,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-5",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 20,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T11:00:01+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-5",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 20,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T11:00:01+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    },
+    {
+        "id": 6,
+        "resolution": 60,
+        "bucket_at": "2026-10-15T11:00:00+00:00",
+        "aggregate": {
+            "count": 1,
+            "backfilled_count": 1,
+            "intervals": [
+                [
+                    1792062000,
+                    1792062001
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 20,
+                    "min": 20,
+                    "max": 20
+                },
+                "memory.total_bytes": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 1073741824,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 536870912,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 536870912,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 0.1,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 0.2,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 0.3,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 10737418240,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 1024,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 1,
+                    "duration": 1,
+                    "weighted_sum": 512,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 20,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-5",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 20,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T11:00:01+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-5",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 20,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T11:00:01+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    },
+    {
+        "id": 7,
+        "resolution": 3600,
+        "bucket_at": "2026-10-15T10:00:00+00:00",
+        "aggregate": {
+            "count": 1,
+            "backfilled_count": 1,
+            "intervals": [
+                [
+                    1792061991,
+                    1792062000
+                ]
+            ],
+            "metrics": {
+                "cpu_percent": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 180,
+                    "min": 20,
+                    "max": 20
+                },
+                "memory.total_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 9663676416,
+                    "min": 1073741824,
+                    "max": 1073741824
+                },
+                "memory.available_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 4831838208,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "memory.used_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 4831838208,
+                    "min": 536870912,
+                    "max": 536870912
+                },
+                "load.one": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 0.9,
+                    "min": 0.1,
+                    "max": 0.1
+                },
+                "load.five": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 1.8,
+                    "min": 0.2,
+                    "max": 0.2
+                },
+                "load.fifteen": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 2.6999999999999997,
+                    "min": 0.3,
+                    "max": 0.3
+                },
+                "disks.system.total_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 96636764160,
+                    "min": 10737418240,
+                    "max": 10737418240
+                },
+                "disks.system.available_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 48318382080,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "disks.system.used_bytes": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 48318382080,
+                    "min": 5368709120,
+                    "max": 5368709120
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 9216,
+                    "min": 1024,
+                    "max": 1024
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "count": 1,
+                    "duration": 9,
+                    "weighted_sum": 4608,
+                    "min": 512,
+                    "max": 512
+                },
+                "pressure.cpu.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.some.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg10": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg60": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.avg300": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                },
+                "pressure.io.full.total_microseconds": {
+                    "count": 0,
+                    "duration": 0,
+                    "weighted_sum": 0,
+                    "min": null,
+                    "max": null
+                }
+            },
+            "peak_evidence": {
+                "cpu": {
+                    "kind": "peak_process_evidence",
+                    "value": 20,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-5",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 20,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T11:00:01+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                },
+                "memory": {
+                    "kind": "peak_process_evidence",
+                    "value": 8388608,
+                    "process": {
+                        "identity": {
+                            "boot_id": "11111111-1111-4111-8111-111111111111",
+                            "pid": 20,
+                            "start_ticks": 1000
+                        },
+                        "name": "worker-5",
+                        "state": "R",
+                        "parent": {
+                            "identity": {
+                                "boot_id": "11111111-1111-4111-8111-111111111111",
+                                "pid": 1,
+                                "start_ticks": 1
+                            },
+                            "status": "known"
+                        },
+                        "cpu_percent": 20,
+                        "rss_bytes": 8388608,
+                        "age_seconds": 990,
+                        "orphan_status": "uncertain",
+                        "former_parent": null
+                    },
+                    "sampled_at": "2026-10-15T11:00:01+00:00",
+                    "scope": "sandbox",
+                    "completeness": "complete"
+                }
+            }
+        }
+    }
+]

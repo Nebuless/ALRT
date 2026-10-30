@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+exec "$root/bin/php" "${NEBULESS_COMPOSER:-$root/tools/composer.phar}" "$@"

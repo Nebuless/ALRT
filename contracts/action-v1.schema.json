@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nebuless.invalid/contracts/action-v1.schema.json",
+  "title": "Primary reboot permit, signed as exact UTF-8 JSON bytes",
+  "description": "Envelope payload and signature use standard padded base64. Decode payload once and verify those original bytes using the locally pinned Ed25519 key. Never decode and reserialize before signature verification. Only reboot is supported; no command or path field exists.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload", "signature"],
+  "properties": {
+    "payload": {"type": "string", "contentEncoding": "base64", "contentMediaType": "application/json", "contentSchema": {"$ref": "#/$defs/permit"}},
+    "signature": {"type": "string", "contentEncoding": "base64", "minLength": 88, "maxLength": 88}
+  },
+  "$defs": {
+    "permit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "action_id", "machine_id", "boot_id", "nonce", "issuer", "key_id", "issued_at", "expires_at", "action_expires_at"],
+      "properties": {
+        "version": {"const": 1},
+        "action_id": {"type": "string", "format": "uuid"},
+        "machine_id": {"type": "string", "format": "uuid"},
+        "boot_id": {"type": "string", "format": "uuid"},
+        "nonce": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "issuer": {"type": "string", "format": "uuid"},
+        "key_id": {"type": "string", "minLength": 1},
+        "issued_at": {"type": "integer", "minimum": 0},
+        "expires_at": {"type": "integer", "minimum": 1},
+        "action_expires_at": {"type": "integer", "minimum": 1}
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["id", "machine_id", "boot_id", "state", "queued_at", "expires_at", "cancelable", "too_late_to_cancel"],
+      "properties": {
+        "id": {"type": "string", "format": "uuid"}, "machine_id": {"type": "string", "format": "uuid"}, "boot_id": {"type": "string", "format": "uuid"},
+        "state": {"enum": ["queued", "cancel_window", "awaiting_primary", "authorized", "attempted", "canceled", "expired", "unknown", "boot_changed", "new_boot_observed"]},
+        "queued_at": {"type": "string", "format": "date-time"}, "expires_at": {"type": "string", "format": "date-time"},
+        "cancelable": {"type": "boolean"}, "too_late_to_cancel": {"type": "boolean"}
+      }
+    }
+  }
+}

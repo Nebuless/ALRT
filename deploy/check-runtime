@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(cd "$(dirname "$0")/.." && pwd)
+if [[ $# -eq 1 ]]; then
+  exec python3 "$root/deploy/observe" "$1"
+fi
+exec "$root/bin/php" "$root/tools/runtime-probe.php"

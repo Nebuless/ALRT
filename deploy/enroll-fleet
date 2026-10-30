@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""One-time collector provisioning over the owner's existing trusted SSH paths."""
+import json
+import os
+from pathlib import Path
+import shlex
+import subprocess
+import sys
+from deployment import read_json, write_json
+
+os.umask(0o077)
+inventory = read_json(sys.argv[1])
+registry = Path(sys.argv[2]).absolute()
+registry.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+credentials = read_json(registry) if registry.exists() else {}
+
+def call(host, arguments, data=None):
+    command = [*host.get('prefix',[]), *arguments]
+    if host.get('ssh'): command = [*host['ssh'], shlex.join(command)]
+    result = subprocess.run(command, input=data, capture_output=True, check=True)
+    return result.stdout
+
+for hub in inventory:
+    args = [hub['base']+'/current/deploy/admin',hub['base'],'fleet:configure-hub','--id='+hub['hub_id'],'--name='+hub['name'],'--role='+('primary' if hub['name']=='Primary-Hub' else 'standby')]
+    for peer in inventory:
+        if peer != hub: args += ['--peer='+peer['name']+'='+peer['origin']]
+    call(hub,args)
+    for machine in inventory:
+        key = hub['hub_id']+'/'+machine['machine_id']
+        if key not in credentials:
+            raw = call(hub,[hub['base']+'/current/deploy/admin',hub['base'],'fleet:enroll-machine',machine['name'],'--id='+machine['machine_id']])
+            identity = json.loads(raw)
+            if identity['hub_id'] != hub['hub_id'] or identity['machine_id'] != machine['machine_id']: raise SystemExit('Enrollment identity mismatch')
+            credentials[key] = identity['token']; write_json(registry,credentials)
+for machine in inventory:
+    destinations = [{'id':hub['hub_id'],'url':hub['origin'],'token':credentials[hub['hub_id']+'/'+machine['machine_id']], **({'proxy_url':'http://127.0.0.1:18445'} if machine.get('proxy') else {})} for hub in inventory]
+    config = {'primary_hub_id':next(h['hub_id'] for h in inventory if h['name']=='Primary-Hub'),'machine_id':machine['machine_id'],'scope':'sandbox' if machine['name']=='Primary-Hub' else 'host','telemetry_directory':machine['base']+'/state/journal','action_directory':machine['base']+'/state/actions','interval_seconds':10,'budget_bytes':512*1024*1024,'segment_bytes':4*1024*1024,'disks':{'system':machine.get('disk','/')},'interfaces':machine.get('interfaces',{}),'destinations':destinations}
+    # Stdin carries credentials; neither argv nor captured output contains them.
+    write = 'import os,pathlib,sys; os.umask(0o077); p=pathlib.Path(sys.argv[1]); p.write_bytes(sys.stdin.buffer.read()); p.chmod(0o600)'
+    call(machine,['python3','-c',write,machine['base']+'/state/collector.json'],json.dumps(config).encode())
+    call(machine,[machine['base']+'/current/deploy/manage',machine['base'],'refresh'])
+print('All three collectors enrolled on every hub; private credentials retained only in owner-controlled files.')

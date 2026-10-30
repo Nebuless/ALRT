@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+"""Read-only installed-state evidence without exporting tokens or process payloads."""
+import datetime
+import json
+from pathlib import Path
+import sqlite3
+import subprocess
+import sys
+from deployment import environment, health, php_command, read_json, write_json
+
+base = Path(sys.argv[1]).absolute()
+release = (base/'current').resolve()
+config = read_json(base/'state/runtime.json')
+php = subprocess.check_output([*php_command(base),str(release/'tools/runtime-probe.php')],env=environment(base,release),text=True)
+node = subprocess.check_output([config['node'],str(release/'tools/node-runtime-probe.mjs')],env=environment(base,release),text=True)
+with sqlite3.connect('file:'+str(base/'state/hub.sqlite')+'?mode=ro',uri=True) as db:
+    db.row_factory = sqlite3.Row
+    rows = [dict(row) for row in db.execute('SELECT m.name,c.last_contact_at,c.sequence,c.boot_id,c.payload FROM machines m LEFT JOIN telemetry_contacts c ON c.machine_id=m.id ORDER BY m.name')]
+    for row in rows:
+        payload = json.loads(row.pop('payload')) if row['payload'] else None
+        row['scope'] = payload.get('scope') if payload else None
+        row['capabilities'] = payload.get('capabilities') if payload else None
+    heartbeats = [dict(row) for row in db.execute('SELECT service,observed_at FROM hub_heartbeats ORDER BY service')]
+    owner = db.execute('SELECT COUNT(*) FROM users').fetchone()[0]
+    actions = db.execute('SELECT COUNT(*) FROM reboot_actions').fetchone()[0]
+    samples = db.execute('SELECT COUNT(*) FROM telemetry_samples').fetchone()[0]
+    hub = dict(db.execute('SELECT hub_uuid,name,role,telegram_chat_id FROM hub_identities WHERE id=1').fetchone())
+if config['manager']=='supervisor':
+    managed = subprocess.check_output(['supervisorctl','-c',str(base/'supervisor.conf'),'status'],text=True)
+else:
+    managed = subprocess.check_output(['systemctl','--user','show','--property=Id,ActiveState,SubState,MainPID,NRestarts','nebuless-auth','nebuless-fpm','nebuless-http','nebuless-scheduler','nebuless-urgent','nebuless-maintenance','nebu-alrt'],text=True)
+    hub['linger'] = subprocess.check_output(['loginctl','show-user',str(__import__('os').getuid()),'-p','Linger','--value'],text=True).strip()
+report = {'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'release':read_json(release/'release.json')['version'],'runtime':{'php':json.loads(php),'node':json.loads(node),'caddy':subprocess.check_output([config['caddy'],'version'],env=environment(base,release),text=True).strip()},'identity':hub,'https':health(base),'services':managed,'contacts':rows,'heartbeats':heartbeats,'samples':samples,'owner_count':owner,'action_count':actions,'deployment':read_json(base/'deployment.json')}
+print(json.dumps(report,indent=2))

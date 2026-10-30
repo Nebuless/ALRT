@@ -1,0 +1,1320 @@
+openapi: 3.1.0
+info:
+  title: Nebuless fleet observation API
+  version: 1.0.0
+  description: 'Owner reads use the local Better Auth session through Laravel, auth
+    generation and confirmed TOTP middleware. Session cookie
+    name is deployment-configurable (default laravel-session). Collectors use separately
+    enrolled revocable Bearer tokens. All telemetry objects use telemetry-v1.schema.json,
+    including its privacy allowlists; slice one sends no titles for any machine. ACK
+    means durable acceptance at this hub only. Contact age never substitutes for sample
+    age. Fleet reads include incidents, service health and timestamped peer observations.
+    Retained history includes raw snapshots and minute/hour aggregates. Queued reboot uses an action-bound password/TOTP proof issued at the same-origin
+    /owner/action-confirmation endpoint and consumed by queue creation. Only the
+    explicitly enrolled Primary-Hub primary can mutate or issue permits. Successful owner
+    reads send Cache-Control: no-store, private.'
+servers:
+- url: /api/v1
+paths:
+  /collector/{machine}/hub-health:
+    parameters:
+    - name: machine
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    get:
+      operationId: readPeerHubHealth
+      description: Authenticated peer health, separate from collector host liveness.
+        Unknown service heartbeat ages remain null. Successful incident delivery
+        receipts are limited to the newest 128 within five minutes. No credentials
+        or Telegram commands are returned. Responses are private and never cached.
+      security:
+      - collectorBearer: []
+      responses:
+        '200':
+          description: This hub identity, service ages and recent successful deliveries.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeerHubHealth'
+        '401':
+          description: Missing, revoked or wrong-machine collector credential.
+  /collector/{machine}/reports:
+    parameters: &id001
+    - name: machine
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Locally enrolled machine UUID. Collector token must be bound to
+        this identity.
+    post:
+      operationId: replayReports
+      description: Historical replay. Validates all reports before one short transaction
+        commits identities and eligible raw samples. Samples outside the inclusive
+        four-hour sampled-UTC window, including future samples, commit identity
+        membership only. Equal canonical identities ACK without
+        contributing again, including after raw pruning. Retained content conflicts fail the entire
+        batch. Never updates contact or current projection.
+      security:
+      - collectorBearer: []
+      responses:
+        '200':
+          description: Committed response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accepted'
+        '401': &id002
+          description: Missing or invalid bound collector credential, or missing owner
+            session.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - message
+                properties:
+                  message:
+                    const: Unauthenticated.
+        '409': &id004
+          description: Retained identity conflict, retired stream/boot, stale sequence
+            or stale challenge. No ACK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413': &id005
+          description: Uncompressed request exceeds 256 KiB or replay contains more
+            than 128 reports. No ACK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422': &id006
+          description: Invalid allowlisted report/envelope, identity mismatch or unsupported
+            protocol version. No ACK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503': &id003
+          description: Persistence failed; transaction rolled back and no ACK was
+            issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - reports
+              properties:
+                reports:
+                  type: array
+                  minItems: 1
+                  maxItems: 128
+                  items:
+                    $ref: '#/components/schemas/TelemetryReport'
+        description: Maximum 262144 bytes of uncompressed JSON including the envelope.
+  /collector/{machine}/challenge:
+    parameters: *id001
+    post:
+      operationId: challengeContact
+      description: Issue a machine-bound single-use nonce valid for 30 seconds, bound
+        to the current projection generation. Each new challenge supersedes the previous
+        challenge for this machine. The challenge alone never refreshes liveness.
+      security:
+      - collectorBearer: []
+      responses:
+        '201':
+          description: Committed response.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - nonce
+                - expires_at
+                properties:
+                  nonce:
+                    type: string
+                    minLength: 64
+                    maxLength: 64
+                  expires_at: &id011
+                    type: string
+                    format: date-time
+        '401': *id002
+        '503': *id003
+  /collector/{machine}/contact:
+    parameters: *id001
+    post:
+      operationId: recordContact
+      description: Challenge response. Commits report acceptance and current projection/contact
+        together before ACK. Reordered JSON object properties have the same content
+        hash. Retired boots/streams, sequences behind retained stream progress or
+        at/below the last current contact, and expired, consumed or superseded nonces
+        fail. Samples older than the inclusive four-hour cutoff fail before
+        mutation. Future samples prove contact but store permanently unavailable
+        evidence; clock catch-up does not restore their payload. Sample age
+        remains explicit.
+        Optional delivery facts are validated before mutation and committed in the same
+        transaction. Claimed destination ACKs are indirect collector claims, never
+        receipts at this hub. Omitted delivery leaves the last observation aging.
+        Repeated identical ACK claims retain their original observation timestamp.
+      security:
+      - collectorBearer: []
+      responses:
+        '200':
+          description: Committed response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactAck'
+        '401': *id002
+        '409': *id004
+        '413': *id005
+        '422': *id006
+        '503': *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - nonce
+              - report
+              properties:
+                nonce:
+                  type: string
+                  minLength: 64
+                  maxLength: 64
+                report:
+                  $ref: '#/components/schemas/TelemetryReport'
+                delivery:
+                  $ref: '#/components/schemas/Delivery'
+        description: Maximum 262144 bytes of uncompressed JSON including the envelope.
+  /fleet:
+    get:
+      operationId: readFleet
+      description: Shared fleet read model. An empty installation is awaiting_enrollment.
+        Host observations carry independent contact and sample ages; this endpoint
+        does not diagnose incidents.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Shared read-model result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fleet'
+        '401': *id002
+        '403': &id007
+          description: Owner session has not completed confirmed TOTP enrollment.
+  /reporting-paths:
+    get:
+      operationId: readFleetReportingPaths
+      description: Shared Satellites paths for every enrolled collector and configured hub.
+        This hub uses direct receipt and contact evidence. Other hubs use timestamped
+        collector ACK claims, with both ACK age and observation age. Either age over
+        30 seconds is stale; a future ACK is unknown. Configured peers without a known
+        UUID or ACK stay unknown. Unmatched claimed UUIDs remain labelled by UUID,
+        never guessed to match a peer. No network origins or credentials are exposed.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: All evidence paths, including explicit unknown destinations.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: {$ref: '#/components/schemas/ReportingPath'}
+        '401': *id002
+        '403': *id007
+  /hosts/{machine}/incidents:
+    parameters: *id001
+    get:
+      operationId: readTodaysHostIncidents
+      description: UTC day timeline shared with host detail. Includes incidents opened
+        or resolved today, plus unresolved incidents carried from earlier days.
+        Rule names are signals, not proven diagnoses.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Chronological local incident evidence, including resolution times.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: {$ref: '#/components/schemas/TimelineIncident'}
+        '401': *id002
+        '403': *id007
+        '404':
+          description: Unknown enrolled machine.
+  /hosts/{machine}:
+    get:
+      operationId: readHost
+      description: Current challenged observation only. Replay-only hosts await_contact
+        with null current measurements. No report yields awaiting_report, never fabricated
+        health.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Shared read-model result.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Host'
+        '401': *id002
+        '403': *id007
+        '404': &id008
+          description: Unknown enrolled machine.
+    parameters: *id001
+  /hosts/{machine}/processes:
+    get:
+      operationId: readProcesses
+      description: Current process categories, completeness, coverage and reasons
+        preserved exactly. Telemetry v1 emits one bounded chunk per category; partial/unavailable
+        lists remain explicit.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Shared read-model result.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProcessObservation'
+        '401': *id002
+        '403': *id007
+        '404': *id008
+    parameters: *id001
+  /hosts/{machine}/capabilities:
+    get:
+      operationId: readCapabilities
+      description: Current capability flags with observation provenance, scope and
+        age. Null when no challenged report exists.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Shared read-model result.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CapabilityObservation'
+        '401': *id002
+        '403': *id007
+        '404': *id008
+    parameters: *id001
+  /hosts/{machine}/paths:
+    get:
+      operationId: readReportingPaths
+      description: This hub incoming path from direct receipts, with separate live-contact
+        age. An observed receipt older than 30 seconds is stale. Other destination
+        ACK summaries reported in delivery metadata are timestamped indirect claims;
+        their absence means unknown, not a healthy path.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Shared read-model result.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Paths'
+        '401': *id002
+        '403': *id007
+        '404': *id008
+    parameters: *id001
+  /hosts/{machine}/history:
+    get:
+      operationId: readHistory
+      description: Retained raw samples in descending local insertion order, including
+        late historical replay, use bounded cursor pagination by default. Supplying
+        from, to or resolution selects a timeline instead. All reads enforce the inclusive
+        sampled-UTC interval from now minus 14400 seconds through now,
+        independently of cleanup.
+        The default resolution is raw. Minute/hour shapes derive only from
+        selected retained
+        raw reports, with clipped coverage and no persisted bucket evidence.
+        Gaps are unknown, never measured zero.
+        Raw snapshots retain exact completeness; aggregated peak evidence is not a
+        complete process list. A range outside its requested retention returns 422.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Shared read-model result.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/History'
+                - $ref: '#/components/schemas/Timeline'
+        '401': *id002
+        '403': *id007
+        '404': *id008
+        '422':
+          description: Invalid date range, expired requested resolution or unsupported resolution.
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 50
+        description: Clamped to 1..128.
+      - name: before
+        in: query
+        schema:
+          type: integer
+        description: Exclusive local sample ID from next_before; omit for newest page.
+      - name: from
+        in: query
+        schema: {type: string, format: date-time}
+        description: Timeline start; defaults to four hours before to.
+      - name: to
+        in: query
+        schema: {type: string, format: date-time}
+        description: Timeline end; defaults to now.
+      - name: resolution
+        in: query
+        schema: {type: string, enum: [raw, minute, hour]}
+        description: Optional resolution. Every range must fit the same current
+          four-hour interval.
+    parameters: *id001
+  /hosts/{machine}/history/snapshots/{sample}:
+    parameters:
+    - name: machine
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    - name: sample
+      in: path
+      required: true
+      schema: {type: integer, minimum: 1}
+    get:
+      operationId: readExactProcessSnapshot
+      description: The exact retained raw snapshot for this machine and sample ID.
+        A missing, expired or future snapshot returns 404; no nearest snapshot
+        is substituted.
+      security:
+      - ownerSession: []
+      responses:
+        '200':
+          description: Exact process evidence with completeness and receipt provenance.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: {$ref: '#/components/schemas/ProcessSnapshot'}
+        '401': *id002
+        '403': *id007
+        '404': *id008
+  /hosts/{machine}/actions:
+    parameters: *id001
+    get:
+      operationId: readRebootState
+      description: Read-only shared capability and latest action projection. No read acquires a writer lock. Missing privilege leaves observation usable.
+      security: [{ownerSession: []}]
+      responses:
+        '200':
+          description: Capability (available, reason, observed_at, boot_id) and nullable latest action.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [capability, latest]
+                properties:
+                  capability: {type: object}
+                  latest:
+                    oneOf:
+                    - {$ref: './action-v1.schema.json#/$defs/action'}
+                    - {type: 'null'}
+  /hosts/{machine}/reboot:
+    parameters: *id001
+    post:
+      operationId: queueReboot
+      description: Requires CSRF and current owner session. Single-use target/session/auth-version proof requires password plus fresh TOTP on this hub. Consumes proof in the IMMEDIATE queue transaction. Returns existing pending action for another valid proof. Absolute expiry is queue creation plus six hours. Primary targets, unknown boot, absent local enrollment or helper capability are refused.
+      security: [{ownerSession: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [proof]
+              properties:
+                proof: {type: string, minLength: 64, maxLength: 64}
+      responses:
+        '201':
+          description: One new or existing pending action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  action: {$ref: './action-v1.schema.json#/$defs/action'}
+        '403': {description: Primary authority required.}
+        '409': {description: Reboot capability unavailable.}
+        '422': {description: Invalid, expired, wrong-target/session/version or consumed confirmation proof.}
+  /hosts/{machine}/reboots/{action}/cancel:
+    parameters: &rebootActionParameters
+    - {name: machine, in: path, required: true, schema: {type: string, format: uuid}}
+    - {name: action, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      operationId: cancelReboot
+      description: Owner and CSRF required on primary. Atomically cancels before authorization, including while awaiting primary. A committed authorization returns too_late_to_cancel. Standbys cannot mutate actions.
+      security: [{ownerSession: []}]
+      responses:
+        '200': {description: Canceled action.}
+        '403': {description: Primary authority required.}
+        '409': {description: Too late to cancel or action terminal.}
+  /collector/{machine}/actions/pickup:
+    parameters: *id001
+    post:
+      operationId: pickupReboot
+      description: Outbound primary-only query following successful fresh contact. A locally authenticated protected-helper probe supplies availability, never its credential. Returns one nullable action without starting the cancel window.
+      security: [{collectorBearer: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [boot_id, available]
+              properties:
+                boot_id: {type: string, format: uuid}
+                available: {type: boolean}
+                reason: {type: [string, 'null'], enum: [helper_unavailable, credential_missing, protected_state_unavailable, null]}
+      responses:
+        '200': {description: Nullable action. Persist receipt with file and directory fsync before ACK.}
+        '403': {description: Primary authority required.}
+        '409': {description: Unenrolled target or unknown/changed current boot.}
+  /collector/{machine}/actions/{action}/ack:
+    parameters: *rebootActionParameters
+    post:
+      operationId: acknowledgeRebootPickup
+      description: First committed pickup ACK starts the sixty-second cancel window once. Duplicate ACK cannot reset it or extend the absolute deadline.
+      security: [{collectorBearer: []}]
+      requestBody: &rebootBootBody
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [boot_id]
+              properties:
+                boot_id: {type: string, format: uuid}
+      responses:
+        '200': {description: Action including original cancel_until.}
+        '403': {description: Primary authority required.}
+        '409': {description: Pickup refused.}
+  /collector/{machine}/actions/{action}/permit:
+    parameters: *rebootActionParameters
+    post:
+      operationId: authorizeReboot
+      description: Atomic final authority after cancel window and before absolute expiry. Nonce is generated by the protected helper with trusted CLOCK_BOOTTIME context. Reissue only the same still-valid ID after a lost response. A committed result permanently fences new permits. The helper's protected consumed-ID history remains mandatory.
+      security: [{collectorBearer: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [boot_id, nonce]
+              properties:
+                boot_id: {type: string, format: uuid}
+                nonce: {type: string, pattern: '^[a-f0-9]{64}$'}
+      responses:
+        '200':
+          description: Exact-byte Ed25519 permit with at most ten seconds, bounded by action expiry.
+          content:
+            application/json:
+              schema: {$ref: './action-v1.schema.json'}
+        '403': {description: Primary authority required.}
+        '409': {description: Wrong boot, canceled, expired, pending window or recorded uncertain result.}
+  /collector/{machine}/actions/{action}/result:
+    parameters: *rebootActionParameters
+    post:
+      operationId: reportRebootResult
+      description: Result claim from the authenticated collector. Unknown permanently stops permit reissue but remains pending through the outstanding-authority safety fence. Later fresh-contact boot observation proves a boot, not causation. Historical replay cannot advance it.
+      security: [{collectorBearer: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [boot_id, status]
+              properties:
+                boot_id: {type: string, format: uuid}
+                status: {type: string, enum: [attempted, unknown]}
+      responses:
+        '200': {description: Result recorded.}
+        '403': {description: Primary authority required.}
+        '409': {description: Wrong boot or action not authorized.}
+
+components:
+  securitySchemes:
+    collectorBearer:
+      type: http
+      scheme: bearer
+      description: 64-character local enrollment token bound to the machine in the
+        route.
+    ownerSession:
+      type: apiKey
+      in: cookie
+      name: laravel-session
+      description: Existing locally provisioned owner web session with current auth_version
+        and confirmed TOTP. SESSION_COOKIE may configure the name.
+  schemas:
+    TelemetryReport:
+      $ref: ./telemetry-v1.schema.json
+    Delivery:
+      $ref: ./delivery-v1.schema.json
+    DeliveryObservation:
+      type: object
+      additionalProperties: false
+      required: [version, recording, possible_loss_seconds, unknown_coverage, lost_ranges, acknowledgements, provenance, observed_at, observation_age_seconds]
+      properties:
+        version:
+          const: 1
+        recording:
+          $ref: ./delivery-v1.schema.json#/properties/recording
+        possible_loss_seconds:
+          const: 30
+        unknown_coverage:
+          type: boolean
+        lost_ranges:
+          $ref: ./delivery-v1.schema.json#/properties/lost_ranges
+        acknowledgements:
+          $ref: ./delivery-v1.schema.json#/properties/acknowledgements
+        provenance:
+          const: collector_claim
+        observed_at:
+          type: string
+          format: date-time
+        observation_age_seconds:
+          type: integer
+          minimum: 0
+    Hub:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - role
+      properties:
+        id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        name: &id010
+          type: string
+        role:
+          type: string
+          enum:
+          - primary
+          - standby
+    Provenance:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - hub
+      - stream_id
+      - boot_id
+      - sequence
+      - generation
+      properties:
+        kind:
+          type: string
+          enum:
+          - direct_contact
+          - unobserved
+        hub:
+          $ref: '#/components/schemas/Hub'
+        stream_id:
+          type:
+          - string
+          - 'null'
+        boot_id:
+          type:
+          - string
+          - 'null'
+        sequence: &id009
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        generation: *id009
+    IdentityAck:
+      type: object
+      additionalProperties: false
+      required:
+      - stream_id
+      - sequence
+      properties:
+        stream_id: *id010
+        sequence:
+          type: integer
+          minimum: 1
+    Accepted:
+      type: object
+      additionalProperties: false
+      required:
+      - accepted
+      properties:
+        accepted:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityAck'
+          maxItems: 128
+    ContactAck:
+      type: object
+      additionalProperties: false
+      required:
+      - accepted
+      - contact_at
+      properties:
+        accepted:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityAck'
+          minItems: 1
+          maxItems: 1
+        contact_at: *id011
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          enum:
+          - invalid_report
+          - protocol_version_unsupported
+          - batch_too_large
+          - identity_conflict
+          - stream_boot_conflict
+          - stale_challenge
+          - retired_stream
+          - stale_contact
+          - ingest_unavailable
+          - expired_contact
+    Host:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - observed_at
+      - contact_at
+      - contact_age_seconds
+      - sampled_at
+      - sample_age_seconds
+      - scope
+      - provenance
+      - unavailable_reason
+      - name
+      - data_policy
+      - state
+      - metrics
+      - capabilities
+      - coverage
+      - processes
+      - delivery
+      - health
+      - observation
+      - actions
+      properties:
+        actions:
+          type: object
+          required: [capability, latest]
+          properties:
+            capability: {type: object}
+            latest:
+              oneOf:
+              - {$ref: './action-v1.schema.json#/$defs/action'}
+              - {type: 'null'}
+        observation:
+          $ref: '#/components/schemas/ObservationAssessment'
+        health:
+          $ref: '#/components/schemas/HostHealth'
+        delivery:
+          anyOf:
+          - $ref: '#/components/schemas/DeliveryObservation'
+          - type: 'null'
+        id: &id013
+          type: string
+          format: uuid
+        observed_at: *id011
+        contact_at: &id012
+          type:
+          - string
+          - 'null'
+          format: date-time
+        contact_age_seconds: *id009
+        sampled_at: *id012
+        sample_age_seconds: *id009
+        scope: &id014
+          type:
+          - string
+          - 'null'
+          enum:
+          - host
+          - sandbox
+          - null
+        provenance: &id015
+          $ref: '#/components/schemas/Provenance'
+        unavailable_reason: &id016
+          type:
+          - string
+          - 'null'
+          enum:
+          - no_report
+          - no_live_contact
+          - observation_unavailable
+          - null
+        name: *id010
+        data_policy:
+          type: string
+          enum:
+          - health_processes
+          - titles
+        state:
+          type: string
+          enum:
+          - observed
+          - awaiting_report
+          - awaiting_contact
+        metrics:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/metrics
+          - type: 'null'
+        capabilities:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/capabilities
+          - type: 'null'
+        coverage:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/coverage
+          - type: 'null'
+        processes:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/processes
+          - type: 'null'
+    Fleet:
+      type: object
+      additionalProperties: false
+      required:
+      - state
+      - observed_at
+      - hub
+      - hosts
+      - incidents
+      - peer_hubs
+      - services
+      - verdict
+      - verdict_detail
+      - attention_count
+      properties:
+        verdict:
+          type: string
+          description: Shared Home sentence. Silence precedes sustained pressure and resource spikes, then unavailable assessment. Ties sort by machine name and UUID.
+        verdict_detail: {type: [string, 'null']}
+        attention_count: {type: integer, minimum: 0}
+        incidents:
+          type: array
+          items: {$ref: '#/components/schemas/Incident'}
+        peer_hubs:
+          type: array
+          items: {$ref: '#/components/schemas/PeerHubObservation'}
+        services:
+          $ref: '#/components/schemas/ServiceAges'
+        state:
+          type: string
+          enum:
+          - awaiting_enrollment
+          - observing
+        observed_at: *id011
+        hub:
+          $ref: '#/components/schemas/Hub'
+        hosts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Host'
+    ServiceAges:
+      type: object
+      additionalProperties: false
+      required: [scheduler, urgent_worker]
+      properties:
+        scheduler: {type: [integer, 'null'], minimum: 0}
+        urgent_worker: {type: [integer, 'null'], minimum: 0}
+    PeerHubHealth:
+      type: object
+      additionalProperties: false
+      required: [hub_id, observed_at, heartbeats, delivered_incidents]
+      properties:
+        hub_id: {type: [string, 'null'], format: uuid}
+        observed_at: {type: string, format: date-time}
+        heartbeats: {$ref: '#/components/schemas/ServiceAges'}
+        delivered_incidents:
+          type: array
+          maxItems: 128
+          items:
+            type: object
+            additionalProperties: false
+            required: [incident_id, delivered_at]
+            properties:
+              incident_id: {type: string}
+              delivered_at: {type: string, format: date-time}
+    ObservationAssessment:
+      type: object
+      additionalProperties: false
+      required: [state, sentence, detail, priority, unavailable_reasons]
+      properties:
+        state:
+          type: string
+          enum: [awaiting_report, awaiting_evaluation, unknown, recovering, stale_metrics, partial_data, suspect, silent, pressure, healthy]
+        sentence: {type: string}
+        detail:
+          type: [string, 'null']
+          description: Names only a process actually received in the last live sample; never asserts a confirmed cause.
+        priority: {type: integer, minimum: 0}
+        unavailable_reasons:
+          type: array
+          items: {type: string}
+          description: Missing measurements and incomplete process coverage. Deliberate ten-entry ranked CPU, RSS and longest-running category_limit selections retain their category labels without alone requiring host attention. Incomplete scans still require attention. Unsupported optional PSI signals stay explicitly unsupported in metrics.
+    TimelineIncident:
+      type: object
+      additionalProperties: false
+      required: [id, target, target_name, kind, rule, opened_at, resolved_at, provenance, observed_at]
+      properties:
+        id: {type: string}
+        target: {type: string}
+        target_name: {type: string}
+        kind: {type: string}
+        rule: {type: string}
+        opened_at: {type: string, format: date-time}
+        resolved_at: {type: [string, 'null'], format: date-time}
+        observed_at: {type: string, format: date-time}
+        provenance: {const: local_incident_evaluation}
+    ReportingPath:
+      type: object
+      required: [source, source_name, target_name, target_hub_id, target_role, provenance, state, observed_at]
+      properties:
+        source: {type: string, format: uuid}
+        source_name: {type: string}
+        target_name: {type: string}
+        target_hub_id: {type: [string, 'null'], format: uuid}
+        target_role: {type: string, enum: [primary, standby, unknown]}
+        target: {$ref: '#/components/schemas/Hub'}
+        provenance: {type: string, enum: [direct_receipt, collector_claim, unobserved]}
+        state: {type: string, enum: [observed, reported, stale, unknown]}
+        observed_at: {type: [string, 'null'], format: date-time}
+        acknowledged_at: {type: string, format: date-time}
+        age_seconds: {type: [integer, 'null'], minimum: 0}
+        contact_age_seconds: {type: [integer, 'null'], minimum: 0}
+        observation_age_seconds: {type: [integer, 'null'], minimum: 0}
+        claim_age_seconds: {type: [integer, 'null'], minimum: 0}
+        stream_id: {type: string}
+        sequence: {type: integer, minimum: 1}
+        unavailable_reason: {type: [string, 'null']}
+    HostHealth:
+      type: object
+      additionalProperties: false
+      required: [state, observed_at, evaluated_at, evaluation_age_seconds, unavailable_reason, incidents]
+      properties:
+        state:
+          type: string
+          enum: [unknown, awaiting_evaluation, awaiting_report, healthy, suspect, silent, recovering, pressure]
+        observed_at: {type: string, format: date-time}
+        evaluated_at: {type: [string, 'null'], format: date-time}
+        evaluation_age_seconds: {type: [integer, 'null'], minimum: 0}
+        unavailable_reason: {type: [string, 'null'], enum: [evaluation_stale, awaiting_evaluation, null]}
+        incidents:
+          type: array
+          items: {$ref: '#/components/schemas/Incident'}
+    Incident:
+      type: object
+      additionalProperties: false
+      required: [id, target, target_name, kind, rule, opened_at, age_seconds, provenance, alert]
+      properties:
+        id: {type: string}
+        target: {type: string}
+        target_name: {type: string}
+        kind: {type: string}
+        rule: {type: string}
+        opened_at: {type: string, format: date-time}
+        age_seconds: {type: integer, minimum: 0}
+        provenance: {const: local_incident_evaluation}
+        alert:
+          type: object
+          additionalProperties: false
+          required: [delivered_at, suppressed_at, next_attempt_at, attempts, last_error]
+          properties:
+            delivered_at: {type: [string, 'null'], format: date-time}
+            suppressed_at: {type: [string, 'null'], format: date-time}
+            next_attempt_at: {type: [string, 'null'], format: date-time}
+            attempts: {type: integer, minimum: 0}
+            last_error: {type: [string, 'null']}
+    PeerHubObservation:
+      type: object
+      additionalProperties: false
+      required: [hub_id, name, http_state, observed_at, observation_age_seconds, peer_observed_at, scheduler_age_seconds, urgent_worker_age_seconds, provenance]
+      properties:
+        hub_id: {type: [string, 'null'], format: uuid}
+        name: {type: string}
+        http_state: {type: string, enum: [unknown, unreachable, authenticated]}
+        observed_at: {type: [string, 'null'], format: date-time}
+        observation_age_seconds: {type: [integer, 'null'], minimum: 0}
+        peer_observed_at: {type: [string, 'null'], format: date-time}
+        scheduler_age_seconds: {type: [integer, 'null'], minimum: 0}
+        urgent_worker_age_seconds: {type: [integer, 'null'], minimum: 0}
+        provenance: {type: string, enum: [authenticated_peer_probe, unobserved]}
+        unavailable_reason: {const: no_authenticated_peer_observation}
+    ProcessObservation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - observed_at
+      - contact_at
+      - contact_age_seconds
+      - sampled_at
+      - sample_age_seconds
+      - scope
+      - provenance
+      - unavailable_reason
+      - processes
+      - coverage
+      properties:
+        id: *id013
+        observed_at: *id011
+        contact_at: *id012
+        contact_age_seconds: *id009
+        sampled_at: *id012
+        sample_age_seconds: *id009
+        scope: *id014
+        provenance: *id015
+        unavailable_reason: *id016
+        processes:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/processes
+          - type: 'null'
+        coverage:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/coverage
+          - type: 'null'
+    CapabilityObservation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - observed_at
+      - contact_at
+      - contact_age_seconds
+      - sampled_at
+      - sample_age_seconds
+      - scope
+      - provenance
+      - unavailable_reason
+      - capabilities
+      properties:
+        id: *id013
+        observed_at: *id011
+        contact_at: *id012
+        contact_age_seconds: *id009
+        sampled_at: *id012
+        sample_age_seconds: *id009
+        scope: *id014
+        provenance: *id015
+        unavailable_reason: *id016
+        capabilities:
+          anyOf:
+          - $ref: ./telemetry-v1.schema.json#/properties/capabilities
+          - type: 'null'
+    Paths:
+      type: object
+      additionalProperties: false
+      required:
+      - machine_id
+      - observed_at
+      - paths
+      - indirect_paths
+      - indirect_unavailable_reason
+      properties:
+        machine_id:
+          type: string
+          format: uuid
+        observed_at: *id011
+        paths:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - source
+            - target
+            - provenance
+            - observed_at
+            - age_seconds
+            - contact_age_seconds
+            - state
+            - unavailable_reason
+            properties:
+              source:
+                type: string
+                format: uuid
+              target:
+                $ref: '#/components/schemas/Hub'
+              provenance:
+                type: string
+                enum:
+                - direct_receipt
+                - unobserved
+              observed_at: *id012
+              age_seconds: *id009
+              contact_age_seconds: *id009
+              state:
+                type: string
+                enum:
+                - unknown
+                - observed
+                - stale
+              unavailable_reason:
+                type:
+                - string
+                - 'null'
+                enum:
+                - no_receipt
+                - null
+        indirect_paths:
+          type: array
+          maxItems: 8
+          description: Timestamped collector claims. Claim age remains independent of this hub's observation and collector contact ages. Either ACK or observation older than 30 seconds remains stale. An absent path is unknown.
+          items:
+            type: object
+            additionalProperties: false
+            required: [source, target_hub_id, provenance, stream_id, sequence, acknowledged_at, claim_age_seconds, observed_at, observation_age_seconds, state]
+            properties:
+              source:
+                type: string
+                format: uuid
+              target_hub_id:
+                type: string
+                format: uuid
+              provenance:
+                const: collector_claim
+              stream_id:
+                type: string
+              sequence:
+                type: integer
+                minimum: 1
+              acknowledged_at:
+                type: string
+                format: date-time
+              claim_age_seconds:
+                type: integer
+                minimum: 0
+              observed_at:
+                type: string
+                format: date-time
+              observation_age_seconds:
+                type: integer
+                minimum: 0
+              state:
+                enum: [unknown, reported, stale]
+        indirect_unavailable_reason:
+          enum: [no_collector_ack_claims, null]
+    History:
+      type: object
+      additionalProperties: false
+      required:
+      - data
+      - next_before
+      - unavailable_reason
+      - order
+      properties:
+        data:
+          type: array
+          maxItems: 128
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - received_at
+            - receipt_age_seconds
+            - sample_age_seconds
+            - scope
+            - provenance
+            - report
+            properties:
+              id:
+                type: integer
+              received_at: *id011
+              receipt_age_seconds: *id009
+              sample_age_seconds: *id009
+              scope:
+                type: string
+                enum:
+                - host
+                - sandbox
+              provenance:
+                type: object
+                additionalProperties: false
+                required:
+                - kind
+                - hub
+                properties:
+                  kind:
+                    const: direct_receipt
+                  hub:
+                    $ref: '#/components/schemas/Hub'
+              report:
+                $ref: '#/components/schemas/TelemetryReport'
+        next_before:
+          type:
+          - integer
+          - 'null'
+        unavailable_reason:
+          type:
+          - string
+          - 'null'
+          enum:
+          - no_retained_samples
+          - null
+        order:
+          const: receipt_desc
+    Timeline:
+      type: object
+      additionalProperties: false
+      required: [machine_id, from, to, resolution, coverage_basis, points, gaps]
+      properties:
+        machine_id: {type: string, format: uuid}
+        from: {type: string, format: date-time}
+        to: {type: string, format: date-time}
+        resolution: {type: string, enum: [raw, minute, hour]}
+        coverage_basis: {const: observed_intervals_capped_at_ten_seconds}
+        points:
+          type: array
+          items:
+            type: object
+            description: Raw points contain sampled_at, received_at, stream_id, sequence,
+              scope, backfilled and an exact snapshot descriptor. Aggregate points
+              contain bucket_at, bucket_seconds, count, backfilled_count and labelled
+              peak_evidence; their snapshot is null. Both contain metrics and observed coverage_seconds.
+            properties:
+              sampled_at: {type: string, format: date-time}
+              received_at: {type: string, format: date-time}
+              stream_id: {type: string}
+              sequence: {type: integer, minimum: 1}
+              scope: {type: string, enum: [host, sandbox]}
+              backfilled: {type: boolean}
+              bucket_at: {type: string, format: date-time}
+              bucket_seconds: {type: integer, enum: [60, 3600]}
+              count: {type: integer, minimum: 0}
+              backfilled_count: {type: integer, minimum: 0}
+              coverage_seconds: {type: number, minimum: 0}
+              metrics:
+                type: object
+                additionalProperties:
+                  type: object
+                  required: [average, min, max, count]
+                  properties:
+                    average: {type: [number, 'null']}
+                    min: {type: [number, 'null']}
+                    max: {type: [number, 'null']}
+                    count: {type: integer, minimum: 0}
+                    duration: {type: number, minimum: 0}
+                    weighted_sum: {type: number}
+              snapshot:
+                type: [object, 'null']
+                properties:
+                  id: {type: integer}
+                  coverage: {$ref: './telemetry-v1.schema.json#/$defs/process_coverage'}
+                  categories:
+                    type: object
+                    description: Each category retains chunk index/count, completeness and reason; process items are fetched by snapshot ID.
+              peak_evidence:
+                oneOf:
+                - type: object
+                - type: array
+                  maxItems: 0
+                description: CPU/memory peak process evidence, explicitly incomplete as a historical process list.
+        gaps:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [from, to, status]
+            properties:
+              from: {type: string, format: date-time}
+              to: {type: string, format: date-time}
+              status: {const: unknown}
+    ProcessSnapshot:
+      type: object
+      additionalProperties: false
+      required: [id, sampled_at, received_at, scope, backfilled, coverage, processes]
+      properties:
+        id: {type: integer, minimum: 1}
+        sampled_at: {type: string, format: date-time}
+        received_at: {type: string, format: date-time}
+        scope: {type: string, enum: [host, sandbox]}
+        backfilled: {type: boolean}
+        coverage: {$ref: './telemetry-v1.schema.json#/$defs/process_coverage'}
+        processes: {$ref: './telemetry-v1.schema.json#/properties/processes'}

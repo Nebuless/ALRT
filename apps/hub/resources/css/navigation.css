@@ -1,0 +1,9 @@
+.nav-dock { width: min(100%, 36rem); margin: 2rem auto max(1rem, env(safe-area-inset-bottom)); }
+.owner-navigation { margin-block: 0 2rem; max-width: 44rem; }
+.owner-navigation .soft-block-nav{grid-template-columns:repeat(3,minmax(0,1fr))}
+.citizens-wrap .owner-navigation { margin-bottom: 1rem; }
+.soft-block-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); padding: .25rem; gap: .25rem; border: 1px solid var(--color-hairline, var(--line, #443b59)); border-radius: 1.5rem; background: var(--color-surface, var(--panel, #171222)); }
+.soft-block-nav a { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .25rem; min-height: 2.75rem; padding: .75rem .5rem; border-radius: 1rem; color: var(--color-muted, var(--muted, #b8afca)); text-decoration: none; font: inherit; font-size: .875rem; overflow-wrap: anywhere; }
+.soft-block-nav a[aria-current="page"] { background: var(--color-active, #30263e); color: var(--color-ink, #f2edf8); font-weight: 500; }
+.soft-block-nav a:focus-visible { outline: 2px solid var(--color-healthy, #a5ddf3); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) { .soft-block-nav a:hover { background: var(--color-active, #30263e); text-decoration: underline; } }

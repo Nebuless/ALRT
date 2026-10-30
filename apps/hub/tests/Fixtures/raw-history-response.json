@@ -1,0 +1,1421 @@
+{
+    "machine_id": "22222222-2222-4222-8222-222222222222",
+    "from": "2026-10-15T11:59:50+00:00",
+    "to": "2026-10-15T12:04:00+00:00",
+    "resolution": "raw",
+    "coverage_basis": "observed_intervals_capped_at_ten_seconds",
+    "points": [
+        {
+            "sampled_at": "2026-10-15T12:00:00+00:00",
+            "received_at": "2026-10-15T12:00:29+00:00",
+            "stream_id": "raw-characterization",
+            "sequence": 1,
+            "scope": "sandbox",
+            "backfilled": false,
+            "metrics": {
+                "cpu_percent": {
+                    "average": 0,
+                    "min": 0,
+                    "max": 0,
+                    "count": 1
+                },
+                "memory.available_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "memory.total_bytes": {
+                    "average": 1073741824,
+                    "min": 1073741824,
+                    "max": 1073741824,
+                    "count": 1
+                },
+                "memory.used_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "load.fifteen": {
+                    "average": 0.3,
+                    "min": 0.3,
+                    "max": 0.3,
+                    "count": 1
+                },
+                "load.five": {
+                    "average": 0.2,
+                    "min": 0.2,
+                    "max": 0.2,
+                    "count": 1
+                },
+                "load.one": {
+                    "average": 0.1,
+                    "min": 0.1,
+                    "max": 0.1,
+                    "count": 1
+                },
+                "disks.system.available_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "disks.system.total_bytes": {
+                    "average": 10737418240,
+                    "min": 10737418240,
+                    "max": 10737418240,
+                    "count": 1
+                },
+                "disks.system.used_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "average": 1024,
+                    "min": 1024,
+                    "max": 1024,
+                    "count": 1
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "average": 512,
+                    "min": 512,
+                    "max": 512,
+                    "count": 1
+                },
+                "pressure.cpu.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                }
+            },
+            "coverage_seconds": 10,
+            "snapshot": {
+                "id": 1,
+                "coverage": {
+                    "discovered": 3,
+                    "enumeration_limited": false,
+                    "malformed": 0,
+                    "permission_denied": 0,
+                    "reason": null,
+                    "sampled": 3,
+                    "scan_limited": false,
+                    "status": "complete",
+                    "vanished": 0
+                },
+                "categories": {
+                    "longest_running": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "orphans": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    },
+                    "top_cpu": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "top_rss": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "zombies": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    }
+                }
+            }
+        },
+        {
+            "sampled_at": "2026-10-15T12:00:30+00:00",
+            "received_at": "2026-10-15T12:01:00+00:00",
+            "stream_id": "raw-characterization",
+            "sequence": 2,
+            "scope": "sandbox",
+            "backfilled": false,
+            "metrics": {
+                "cpu_percent": {
+                    "average": 99,
+                    "min": 99,
+                    "max": 99,
+                    "count": 1
+                },
+                "memory.available_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "memory.total_bytes": {
+                    "average": 1073741824,
+                    "min": 1073741824,
+                    "max": 1073741824,
+                    "count": 1
+                },
+                "memory.used_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "load.fifteen": {
+                    "average": 0.3,
+                    "min": 0.3,
+                    "max": 0.3,
+                    "count": 1
+                },
+                "load.five": {
+                    "average": 0.2,
+                    "min": 0.2,
+                    "max": 0.2,
+                    "count": 1
+                },
+                "load.one": {
+                    "average": 0.1,
+                    "min": 0.1,
+                    "max": 0.1,
+                    "count": 1
+                },
+                "disks.system.available_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "disks.system.total_bytes": {
+                    "average": 10737418240,
+                    "min": 10737418240,
+                    "max": 10737418240,
+                    "count": 1
+                },
+                "disks.system.used_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "average": 1024,
+                    "min": 1024,
+                    "max": 1024,
+                    "count": 1
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "average": 512,
+                    "min": 512,
+                    "max": 512,
+                    "count": 1
+                },
+                "pressure.cpu.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                }
+            },
+            "coverage_seconds": 10,
+            "snapshot": {
+                "id": 2,
+                "coverage": {
+                    "discovered": 3,
+                    "enumeration_limited": false,
+                    "malformed": 0,
+                    "permission_denied": 0,
+                    "reason": null,
+                    "sampled": 3,
+                    "scan_limited": false,
+                    "status": "complete",
+                    "vanished": 0
+                },
+                "categories": {
+                    "longest_running": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "orphans": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    },
+                    "top_cpu": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "top_rss": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "zombies": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    }
+                }
+            }
+        },
+        {
+            "sampled_at": "2026-10-15T12:01:00+00:00",
+            "received_at": "2026-10-15T12:01:31+00:00",
+            "stream_id": "raw-characterization",
+            "sequence": 3,
+            "scope": "sandbox",
+            "backfilled": true,
+            "metrics": {
+                "cpu_percent": {
+                    "average": 20,
+                    "min": 20,
+                    "max": 20,
+                    "count": 1
+                },
+                "memory.available_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "memory.total_bytes": {
+                    "average": 1073741824,
+                    "min": 1073741824,
+                    "max": 1073741824,
+                    "count": 1
+                },
+                "memory.used_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "load.fifteen": {
+                    "average": 0.3,
+                    "min": 0.3,
+                    "max": 0.3,
+                    "count": 1
+                },
+                "load.five": {
+                    "average": 0.2,
+                    "min": 0.2,
+                    "max": 0.2,
+                    "count": 1
+                },
+                "load.one": {
+                    "average": 0.1,
+                    "min": 0.1,
+                    "max": 0.1,
+                    "count": 1
+                },
+                "disks.system.available_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "disks.system.total_bytes": {
+                    "average": 10737418240,
+                    "min": 10737418240,
+                    "max": 10737418240,
+                    "count": 1
+                },
+                "disks.system.used_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "average": 1024,
+                    "min": 1024,
+                    "max": 1024,
+                    "count": 1
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "average": 512,
+                    "min": 512,
+                    "max": 512,
+                    "count": 1
+                },
+                "pressure.cpu.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                }
+            },
+            "coverage_seconds": 10,
+            "snapshot": {
+                "id": 3,
+                "coverage": {
+                    "discovered": 3,
+                    "enumeration_limited": false,
+                    "malformed": 0,
+                    "permission_denied": 0,
+                    "reason": null,
+                    "sampled": 3,
+                    "scan_limited": false,
+                    "status": "complete",
+                    "vanished": 0
+                },
+                "categories": {
+                    "longest_running": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "orphans": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    },
+                    "top_cpu": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "top_rss": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "zombies": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    }
+                }
+            }
+        },
+        {
+            "sampled_at": "2026-10-15T12:03:00+00:00",
+            "received_at": "2026-10-15T12:03:31+00:00",
+            "stream_id": "raw-characterization",
+            "sequence": 4,
+            "scope": "sandbox",
+            "backfilled": true,
+            "metrics": {
+                "cpu_percent": {
+                    "average": 40,
+                    "min": 40,
+                    "max": 40,
+                    "count": 1
+                },
+                "memory.available_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "memory.total_bytes": {
+                    "average": 1073741824,
+                    "min": 1073741824,
+                    "max": 1073741824,
+                    "count": 1
+                },
+                "memory.used_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "load.fifteen": {
+                    "average": 0.3,
+                    "min": 0.3,
+                    "max": 0.3,
+                    "count": 1
+                },
+                "load.five": {
+                    "average": 0.2,
+                    "min": 0.2,
+                    "max": 0.2,
+                    "count": 1
+                },
+                "load.one": {
+                    "average": 0.1,
+                    "min": 0.1,
+                    "max": 0.1,
+                    "count": 1
+                },
+                "disks.system.available_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "disks.system.total_bytes": {
+                    "average": 10737418240,
+                    "min": 10737418240,
+                    "max": 10737418240,
+                    "count": 1
+                },
+                "disks.system.used_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "average": 1024,
+                    "min": 1024,
+                    "max": 1024,
+                    "count": 1
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "average": 512,
+                    "min": 512,
+                    "max": 512,
+                    "count": 1
+                },
+                "pressure.cpu.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                }
+            },
+            "coverage_seconds": 5.5,
+            "snapshot": {
+                "id": 4,
+                "coverage": {
+                    "discovered": 3,
+                    "enumeration_limited": false,
+                    "malformed": 0,
+                    "permission_denied": 0,
+                    "reason": null,
+                    "sampled": 3,
+                    "scan_limited": false,
+                    "status": "complete",
+                    "vanished": 0
+                },
+                "categories": {
+                    "longest_running": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "orphans": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    },
+                    "top_cpu": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "top_rss": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "zombies": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    }
+                }
+            }
+        },
+        {
+            "sampled_at": "2026-10-15T12:03:10+00:00",
+            "received_at": "2026-10-15T12:03:39+00:00",
+            "stream_id": "raw-characterization",
+            "sequence": 5,
+            "scope": "sandbox",
+            "backfilled": false,
+            "metrics": {
+                "cpu_percent": {
+                    "average": 50,
+                    "min": 50,
+                    "max": 50,
+                    "count": 1
+                },
+                "memory.available_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "memory.total_bytes": {
+                    "average": 1073741824,
+                    "min": 1073741824,
+                    "max": 1073741824,
+                    "count": 1
+                },
+                "memory.used_bytes": {
+                    "average": 536870912,
+                    "min": 536870912,
+                    "max": 536870912,
+                    "count": 1
+                },
+                "load.fifteen": {
+                    "average": 0.3,
+                    "min": 0.3,
+                    "max": 0.3,
+                    "count": 1
+                },
+                "load.five": {
+                    "average": 0.2,
+                    "min": 0.2,
+                    "max": 0.2,
+                    "count": 1
+                },
+                "load.one": {
+                    "average": 0.1,
+                    "min": 0.1,
+                    "max": 0.1,
+                    "count": 1
+                },
+                "disks.system.available_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "disks.system.total_bytes": {
+                    "average": 10737418240,
+                    "min": 10737418240,
+                    "max": 10737418240,
+                    "count": 1
+                },
+                "disks.system.used_bytes": {
+                    "average": 5368709120,
+                    "min": 5368709120,
+                    "max": 5368709120,
+                    "count": 1
+                },
+                "network.uplink.receive_bytes_per_second": {
+                    "average": 1024,
+                    "min": 1024,
+                    "max": 1024,
+                    "count": 1
+                },
+                "network.uplink.transmit_bytes_per_second": {
+                    "average": 512,
+                    "min": 512,
+                    "max": 512,
+                    "count": 1
+                },
+                "pressure.cpu.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.cpu.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.io.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.full.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg10": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg60": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.avg300": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                },
+                "pressure.memory.some.total_microseconds": {
+                    "average": null,
+                    "min": null,
+                    "max": null,
+                    "count": 0
+                }
+            },
+            "coverage_seconds": 10,
+            "snapshot": {
+                "id": 5,
+                "coverage": {
+                    "discovered": 3,
+                    "enumeration_limited": false,
+                    "malformed": 0,
+                    "permission_denied": 0,
+                    "reason": null,
+                    "sampled": 3,
+                    "scan_limited": false,
+                    "status": "complete",
+                    "vanished": 0
+                },
+                "categories": {
+                    "longest_running": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "orphans": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    },
+                    "top_cpu": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "top_rss": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 3
+                    },
+                    "zombies": {
+                        "chunk_count": 1,
+                        "chunk_index": 0,
+                        "completeness": "complete",
+                        "reason": null,
+                        "total_observed": 1
+                    }
+                }
+            }
+        }
+    ],
+    "gaps": [
+        {
+            "from": "2026-10-15T12:00:00+00:00",
+            "to": "2026-10-15T12:00:20+00:00",
+            "status": "unknown"
+        },
+        {
+            "from": "2026-10-15T12:00:30+00:00",
+            "to": "2026-10-15T12:00:50+00:00",
+            "status": "unknown"
+        },
+        {
+            "from": "2026-10-15T12:01:00+00:00",
+            "to": "2026-10-15T12:02:54+00:00",
+            "status": "unknown"
+        },
+        {
+            "from": "2026-10-15T12:03:10+00:00",
+            "to": "2026-10-15T12:04:00+00:00",
+            "status": "unknown"
+        }
+    ]
+}

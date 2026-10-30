@@ -1,0 +1,13 @@
+{
+  "id": "/",
+  "name": "Nebuless",
+  "short_name": "Nebuless",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#151024",
+  "theme_color": "#151024",
+  "icons": [
+    {"src": "/icons/orbit.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}

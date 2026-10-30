@@ -1,0 +1,29 @@
+name: Reconcile deployments
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  desired:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      run-id: ${{ steps.desired.outputs.run_id }}
+      version: ${{ steps.desired.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - id: desired
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 deploy/desired-release >> "$GITHUB_OUTPUT"
+  converge:
+    needs: desired
+    if: needs.desired.outputs.run-id != ''
+    uses: ./.github/workflows/deploy-hosts.yml
+    with:
+      run-id: ${{ needs.desired.outputs.run-id }}
+      version: ${{ needs.desired.outputs.version }}
+    secrets: inherit

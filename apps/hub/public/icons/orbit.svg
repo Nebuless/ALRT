@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Orbit">
+  <path d="M36 12C29.373 5.373 18.627 5.373 12 12S5.373 29.373 12 36s17.373 6.627 24 0" fill="none" stroke="#a6e6ff" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="24" cy="24" r="7" fill="#a6e6ff"/>
+  <circle cx="41" cy="24" r="3" fill="#ff8cc8"/>
+</svg>

@@ -1,0 +1,17 @@
+# Host-local release evidence, private fixtures and generated test output.
+.context/
+__pycache__/
+*.py[cod]
+.qlty/logs
+.qlty/out
+.qlty/plugin_cachedir
+.qlty/results
+.publication/
+*.db
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.pem
+*.key
+*.env
+!.env.example
